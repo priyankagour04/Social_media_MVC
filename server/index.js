@@ -7,6 +7,7 @@ import postRoute from './Routes/postRoute.js'
 import notificationRoutes from './Routes/notificationRoutes.js';
 import followRoute from './Routes/followRoute.js'
 import cors from 'cors'
+import profileRoute from './Routes/profileRoute.js'
 dotenv.config(); 
 
 const app = express(); 
@@ -26,7 +27,7 @@ app.use('/api/auth', authRoute)
 app.use('/api/post', postRoute )
 app.use('/api/notification', notificationRoutes)
 app.use('/api/follow', followRoute )
-
+app.use('/api/profile', profileRoute)
 const PORT = process.env.PORT || 5055;
 
 // Start the server

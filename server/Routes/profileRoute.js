@@ -1,8 +1,12 @@
 import express from "express";
-import { createProfile, getSpecificUserProfile, getUserProfile, updateProfile } from "../Controllers/profileController.js";
+import { getSpecificUserProfile, getUserProfile, updateProfile } from "../Controllers/profileController.js";
+import ensureAuthenticated from "../Middlewares/authMiddleware.js";
 const router = express.Router();
 
-router.post("create/profile", createProfile);
-router.put("/profile/:userId", getUserProfile);
-router.put("edit/profile/:userId", updateProfile);
-router.get("/profile/:username", getSpecificUserProfile);
+// router.post("create/profile", createProfile);
+// router.put("/:userId", getUserProfile);
+router.put("/edit/:userId", updateProfile);
+router.get("/:username", getSpecificUserProfile);
+
+
+export default router;
