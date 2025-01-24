@@ -6,6 +6,7 @@ import authRoute from './Routes/authRoute.js'
 import postRoute from './Routes/postRoute.js'
 import notificationRoutes from './Routes/notificationRoutes.js';
 import followRoute from './Routes/followRoute.js'
+import cors from 'cors'
 dotenv.config(); 
 
 const app = express(); 
@@ -13,6 +14,9 @@ const app = express();
 // Middleware
 app.use(bodyParser.json()); // To handle JSON request bodies
 app.use(bodyParser.urlencoded({ extended: true })); // To handle URL-encoded request bodies
+
+app.use(cors());
+
 
 app.get('/', (req, res) => {
     res.send('Server is up and running!');
