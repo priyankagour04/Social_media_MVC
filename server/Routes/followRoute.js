@@ -1,11 +1,12 @@
 import express from 'express';
 import { acceptFollowRequest, rejectFollowRequest, sendFollowRequest } from '../Controllers/followController.js';
+import ensureAuthenticated from '../Middlewares/authMiddleware.js';
 
 const router = express.Router();
 
-router.post("/follow/send/:userId", sendFollowRequest);
-router.post("/follow/accept/:userId", acceptFollowRequest);
-router.post("/follow/reject/:userId", rejectFollowRequest);
+router.post("/send/:username", ensureAuthenticated, sendFollowRequest);
+router.post("/accept/:username", ensureAuthenticated, acceptFollowRequest);
+router.post("/reject/:username",ensureAuthenticated, rejectFollowRequest);
 
  
 
