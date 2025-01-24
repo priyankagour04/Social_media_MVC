@@ -45,7 +45,7 @@ export const updateProfile = async (req, res) => {
     } catch (error) {}
   };
   
-  // Get a specific user's profile data
+  // Get a specific user's profile data using there @username
   export const getSpecificUserProfile = async (req, res) => {
     const { username } = req.params;
   
