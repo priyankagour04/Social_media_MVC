@@ -40,8 +40,7 @@ const Home = () => {
 
   return (
     <div className="min-vh-100" >
-      {/* Navbar */}
- <Navbar/>
+
       {/* Main Content */}
       <main className="container my-4">
         {/* Create Post Section */}
