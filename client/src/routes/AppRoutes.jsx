@@ -30,6 +30,7 @@ const AppRoutes = () => (
           path={routes.home.path}
           element={
             <ProtectedRoute>
+
               <Home />
             </ProtectedRoute>
           }

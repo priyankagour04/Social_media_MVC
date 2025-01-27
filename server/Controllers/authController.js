@@ -1,6 +1,31 @@
-import  jwt  from "jsonwebtoken";  // Import JSON Web Token generation
+import jwt from "jsonwebtoken"; // Import JSON Web Token generation
 import bcrypt from "bcrypt";
-import UserModel from "../Models/userModel.js";  // Ensure the import ends with .js
+import UserModel from "../Models/userModel.js"; // Ensure the import ends with .js
+import userModel from "../Models/userModel.js";
+
+// verify email
+export const verifyEmail = async (req, res) => {
+  const { token } = req.params;
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // find the user and updated 'verified' status
+    const user = await userModel.findOneAndUpdate(
+      { _id: decoded.id },
+      { verified: true },
+      { new: true }
+    );
+
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired token" });
+    }
+
+    res.status(200).json({ message: "Email successfully verified" });
+  } catch (error) {
+    console.error("Token verification error:", error);
+    res.status(500).json({ message: "Email verification failed" });
+  }
+};
 
 // Signup function
 export const signup = async (req, res) => {
@@ -24,9 +49,13 @@ export const signup = async (req, res) => {
     await user.save();
 
     // Generate a JWT token
-    const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
-      expiresIn: "7d", // Token expires in 7 days
-    });
+    const token = jwt.sign(
+      { id: user._id, email: user.email },
+      process.env.JWT_SECRET,
+      {
+        expiresIn: "7d", // Token expires in 7 days
+      }
+    );
 
     // Send response
     res.status(201).json({

@@ -23,6 +23,10 @@ app.get('/', (req, res) => {
     res.send('Server is up and running!');
 });
 
+if (!process.env.EMAIL) {
+    
+}
+
 app.use('/api/auth', authRoute)
 app.use('/api/post', postRoute )
 app.use('/api/notification', notificationRoutes)

@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { FaBell, FaSearch, FaUserCircle } from "react-icons/fa";
-
+import { IoHome } from "react-icons/io5";
 const navbar = () => {
      const navigate = useNavigate();
 
@@ -28,6 +28,15 @@ const navbar = () => {
             SocialApp
           </a>
           <div className="d-flex">
+          <button
+              className="btn btn-link me-2"
+              aria-label="Home"
+              style={{ color: "var(--white)" }}
+              onClick={() => handleNavigation("/home")}
+            >
+            <IoHome size={20} />
+           
+            </button>
             <button
               className="btn btn-link me-2"
               aria-label="Notifications"
