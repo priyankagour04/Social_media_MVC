@@ -3,7 +3,7 @@ import userModel from "../Models/userModel.js";
 
 export const createPost = async (req, res) => {
   try {
-    const { userId, content, image } = req.body;
+    const { userId, content, image, tags } = req.body;
 
     // Find user in the database
     const user = await userModel.findById(userId);
@@ -14,6 +14,7 @@ export const createPost = async (req, res) => {
       user: userId,
       content,
       image,
+      tags,
     });
 
     await post.save();
@@ -56,7 +57,7 @@ export const getUserPosts = async (req, res) => {
 export const updatePost = async (req, res) => {
   try {
     const { postId } = req.params;
-    const { content, image } = req.body;
+    const { content, image, tags } = req.body;
 
     // find the post
     const post = await postModel.findById(postId);
@@ -67,6 +68,7 @@ export const updatePost = async (req, res) => {
 
     if (content) post.content = content;
     if (image) post.image = image;
+    if (tags) post.tags = tags;
 
     await post.save();
     res.status(200).json({ message: "Post updated successfully.", post });
@@ -79,33 +81,96 @@ export const deletePost = async (req, res) => {
   try {
     const { postId } = req.params;
 
-    // find the post
+    // Find the post by its ID
     const post = await postModel.findById(postId);
-    if (!post)
-      return res.status(404).json({
-        message: "Post Not Found",
-      });
-    // remove post from user's list
-    const user = await userModel.findById(post.user);
-    if (user) {
-      user.posts = user.posts.filter((id) => id.toString() !== postId);
-      await user.save();
+    if (!post) {
+      return res.status(404).json({ message: "Post Not Found" });
     }
 
-    // delete post
-    await postModel.findByIdAndDelete(postId);
-    res.status(200).json({ message: "Post delete successfully" });
+    // Find the user associated with the post
+    const user = await userModel.findById(post.user);
+    if (user) {
+      // Remove the post ID from the user's posts array
+      user.posts = user.posts.filter((id) => id.toString() !== postId);
+      await user.save(); // Save updated user
+    } else {
+      console.warn(`User for post ${postId} not found in the database.`);
+    }
+
+    // Delete the post
+    const deletedPost = await postModel.findByIdAndDelete(postId);
+
+    // Verify if the post was successfully deleted
+    if (!deletedPost) {
+      return res.status(500).json({ message: "Failed to delete the post." });
+    }
+
+    res.status(200).json({ message: "Post deleted successfully." });
   } catch (error) {
+    console.error("Error deleting post:", error); // Better error logging
     res.status(500).json({ message: "Error deleting post.", error });
   }
 };
 
+
 export const likePost = async (req, res) => {
   try {
-  } catch (error) {}
+    const { postId } = req.params;
+    const { userId } = req.body; // Assuming user ID is passed in the body
+
+    // Validate input
+    if (!userId) {
+      return res.status(400).json({ message: "User ID is required." });
+    }
+
+    // Find the post
+    const post = await postModel.findById(postId);
+    if (!post) {
+      return res.status(404).json({ message: "Post not found." });
+    }
+
+    // Check if the user already liked the post
+    if (post.likes.includes(userId)) {
+      return res.status(400).json({ message: "Post already liked by this user." });
+    }
+
+    // Add user ID to likes
+    post.likes.push(userId);
+    await post.save();
+
+    res.status(200).json({
+      message: "Post liked successfully.",
+      totalLikes: post.likes.length, // Total number of likes
+    });
+  } catch (error) {
+    console.error("Error in likePost:", error); // Add logging for debugging
+    res.status(500).json({ message: "Error liking post.", error });
+  }
 };
 
 export const unlikePost = async (req, res) => {
   try {
-  } catch (error) {}
+    const { postId } = req.params;
+    const { userId } = req.body; // Assuming user ID is passed in the body
+
+    // Find the post
+    const post = await postModel.findById(postId);
+    if (!post) return res.status(404).json({ message: "Post not found." });
+
+    // Check if the user has not liked the post
+    if (!post.likes.includes(userId)) {
+      return res.status(400).json({ message: "Post not liked yet." });
+    }
+
+    // Remove user ID from likes
+    post.likes = post.likes.filter((id) => id.toString() !== userId);
+    await post.save();
+
+    res.status(200).json({
+      message: "Post unliked successfully.",
+      likes: post.likes.length, // Returning the updated like count
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error unliking the post.", error });
+  }
 };
