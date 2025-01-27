@@ -1,0 +1,19 @@
+/* Example Styling for Image Cards */
+.card img {
+    height: 200px;
+    object-fit: cover;
+  }
+  
+  .card-body {
+    padding: 1.5rem;
+  }
+  
+  .card-title {
+    font-size: 18px;
+    font-weight: bold;
+  }
+  
+  .card-text {
+    color: #6c757d;
+  }
+      

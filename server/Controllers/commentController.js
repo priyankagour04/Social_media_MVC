@@ -4,7 +4,8 @@ import postModel from '../Models/postModel.js';
 
 export const addCommentToPost = async (req, res) => {
   try {
-    
+    const { postId } = req.params;
+    const { userId, text } = req.body;
 
    
   } catch (error) {

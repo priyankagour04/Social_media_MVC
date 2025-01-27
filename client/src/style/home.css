@@ -1,0 +1,81 @@
+/* styles.css */
+.post-card {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .post-card:hover {
+   
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  }
+  
+  .post-content h5 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #2c3e50;
+  }
+  
+  .post-content p {
+    font-size: 1rem;
+    color: #34495e;
+  }
+  
+  .post-card .card-body {
+    padding: 1rem;
+    display: flex;
+  }
+  
+  img {
+    border-radius: 50%;
+  }
+  
+  .card-body small {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+  }
+  
+  .post-tags {
+    margin-top: 10px;
+  }
+  
+  .post-tags .badge {
+    font-size: 0.9rem;
+  }
+  
+  textarea.form-control {
+    border-radius: 8px;
+    box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.1);
+  }
+  
+  textarea:focus {
+    border-color: #3498db;
+  }
+  
+  .btn-primary {
+    background-color: #3498db;
+    border-color: #2980b9;
+  }
+  
+  .btn-primary:hover {
+    background-color: #2980b9;
+  }
+  
+  /* Post Image Styling */
+  img.img-fluid {
+    max-width: 100%;
+    border-radius: 8px;
+  }
+  
+  /* Post Interactions */
+  .post-interactions {
+    font-size: 0.9rem;
+  }
+  
+  .likes, .comments {
+    display: flex;
+    align-items: center;
+  }
+  
+  .likes svg, .comments svg {
+    margin-right: 5px;
+  }
+  

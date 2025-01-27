@@ -1,0 +1,90 @@
+:root {
+    /* Primary Colors */
+    --primary-color: #6e6e6e; /* Medium gray (not too dark, not too light) */
+    --secondary-color: #a6a6a6; /* Lighter gray for contrast */
+  
+    /* Black and White Tones */
+    --black: #1a1a1a; /* Almost black for strong contrast */
+    --white: #ffffff; /* Standard white */
+  
+    /* Accent Colors */
+    --accent-color-blue: #5b9bd5; /* Muted blue for links, buttons */
+    --accent-color-green: #8abf71; /* Soft green for success messages */
+    --accent-color-red: #d9534f; /* Neutral red for errors or warnings */
+    
+    /* Neutral Shades */
+    --gray-dark: #4b4b4b; /* Darker shade of gray */
+    --gray-medium: #808080; /* Standard medium gray for borders, dividers */
+    --gray-light: #d1d1d1; /* Light gray for background or inactive elements */
+  
+    /* Backgrounds */
+    --background-color: #f4f4f4; /* Very light gray for primary backgrounds */
+    --card-background: #e0e0e0; /* Subtle gray for card backgrounds */
+  
+    /* Text Colors */
+    --text-primary: var(--black); /* Primary text color */
+    --text-secondary: var(--gray-dark); /* Secondary text color */
+    --text-muted: var(--gray-medium); /* Muted or disabled text */
+  
+    /* Border Colors */
+    --border-color-light: var(--gray-light);
+    --border-color-dark: var(--gray-dark);
+  
+    /* Shadows */
+    --box-shadow-light: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    --box-shadow-dark: 0px 4px 8px rgba(0, 0, 0, 0.2);
+  }
+  
+  body {
+    font-family: 'Arial', sans-serif;
+    color: var(--text-primary);
+    background-color: var(--background-color);
+    margin: 0;
+    padding: 0;
+  }
+  
+  a {
+    color: var(--accent-color-blue);
+    text-decoration: none;
+  }
+  
+  a:hover {
+    color: var(--accent-color-blue);
+    text-decoration: underline;
+  }
+  
+  button {
+    background-color: var(--primary-color);
+    color: var(--white);
+    border: 1px solid var(--border-color-dark);
+    padding: 10px 15px;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease-in-out;
+  }
+  
+  button:hover {
+    background-color: var(--gray-dark);
+  }
+  
+  .card {
+    background: var(--card-background);
+    color: var(--text-secondary);
+    box-shadow: var(--box-shadow-light);
+    padding: 20px;
+    border-radius: 8px;
+  }
+  
+  input, textarea {
+    border: 1px solid var(--border-color-light);
+    background: var(--background-color);
+    color: var(--text-primary);
+    padding: 10px;
+    border-radius: 4px;
+  }
+  
+  input:focus, textarea:focus {
+    outline: none;
+    border-color: var(--accent-color-blue);
+  }
+  
