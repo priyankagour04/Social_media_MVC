@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSignupMutation } from "../../services/api/authAPI"; // Assuming the hook is in this path
+import { useSignupMutation } from "../../services/api/authAPI"; 
 
 const Signup = () => {
   const navigate = useNavigate();
