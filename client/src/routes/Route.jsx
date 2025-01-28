@@ -5,7 +5,7 @@ const routes = {
     isProtected: true,
   },
   profile: {
-    path: "/profile/:userId",
+    path: "/profile/",
     element: "ViewProfile",
     isProtected: true,
   },

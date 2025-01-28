@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useSignupMutation } from "../../services/api/authAPI"; 
+import { useSignupMutation } from "../../services/api/authAPI";
 
 const Signup = () => {
   const navigate = useNavigate();
-  
+
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
@@ -17,10 +17,25 @@ const Signup = () => {
 
     try {
       // Perform the signup with API call using RTK
-      await signup({ email, username, password }).unwrap();
+      const response = await signup({ email, username, password }).unwrap();
       
-      // After successful signup, navigate to the login page
-      navigate("/profile");
+      // Log the response to inspect the data structure
+      console.log("API Response:", response);
+
+      // If the API response contains a user ID, username, and token, store them in localStorage
+      if (response && response.user && response.token) {
+        const { user, token } = response;
+
+        // Store user information in localStorage
+        localStorage.setItem("userId", user.id);  // Ensure correct field name (from response.user)
+        localStorage.setItem("username", user.username || username);  // Store username from response or input
+        localStorage.setItem("jwtToken", token);  // Store the JWT Token
+
+        // After successful signup, navigate to the login page
+        navigate("/profile");
+      } else {
+        throw new Error("Signup response missing required fields.");
+      }
     } catch (err) {
       console.error("Signup failed:", err);
     }
@@ -36,7 +51,7 @@ const Signup = () => {
         <p className="text-muted mb-4">
           Already have an account?{" "}
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
             className="text-success fw-medium text-decoration-none border-0 bg-transparent"
           >
             Login
@@ -66,7 +81,7 @@ const Signup = () => {
             </label>
             <input
               type="text"
-              id="Username"
+              id="username"
               className="form-control shadow-sm"
               placeholder="Enter your Username"
               value={username}
