@@ -1,49 +1,56 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useLoginMutation } from "../../services/api/authAPI"; 
+import { useLoginMutation } from "../../services/api/authAPI";
+import { useDispatch } from "react-redux";
+import { setCredentials } from "../../redux/slices/authSlice";
 
 const Login = () => {
   const navigate = useNavigate();
-  
-  // State for storing username and password
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  
-  // Using the useLoginMutation hook
-  const [login, { data, isLoading, isError, error }] = useLoginMutation();
+  const dispatch = useDispatch();
 
-  // Handle form submission and login
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const [login, { data, isLoading, isError, error, isSuccess }] =
+    useLoginMutation();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Attempting the login API call with the username and password
+    setErrorMessage(""); // Reset previous errors
+
+    // Perform the login mutation
     login({ username, password });
   };
 
-  // Handle successful login or redirect
   useEffect(() => {
-    if (data) {
-      // If login is successful, redirect to the home route
-      navigate("/home");
-    }
-  }, [data, navigate]);
+    if (isSuccess && data) {
+      // Check if user data and necessary properties exist
+      if (data.success && data.user && data.user._id && data.user.username) {
+        // Store user information in localStorage
+        localStorage.setItem("userId", data.user._id);  // user._id instead of data.user.id
+        localStorage.setItem("jwtToken", data.token);
+        localStorage.setItem("LoggedInUser", data.user.username);
 
-  // Handle any login errors
-  useEffect(() => {
+        // Dispatch user credentials to Redux store for global state management
+        dispatch(
+          setCredentials({ token: data.token, user: data.user })
+        );
+
+        // Navigate to the home page or dashboard
+        navigate("/home", { replace: true });
+      } else {
+        setErrorMessage("User information is incomplete.");
+      }
+    }
+
     if (isError) {
-      // Log the actual error response for debugging
-      console.error("Login failed:", error);
+      setErrorMessage(error?.data?.message || "An error occurred during login.");
     }
-  }, [isError, error]);
+  }, [isSuccess, data, isError, error, dispatch, navigate]);
 
-  // Redirect to the signup page
-  const handleSignupRedirect = () => {
-    navigate("/signup");
-  };
-
-  // Redirect to the forgot password page
-  const handleForgotPasswordRedirect = () => {
-    navigate("/forget");
-  };
+  const handleSignupRedirect = () => navigate("/signup");
+  const handleForgotPasswordRedirect = () => navigate("/forget");
 
   return (
     <div className="vh-100 d-flex justify-content-center align-items-center bg-light">
@@ -51,7 +58,7 @@ const Login = () => {
         className="p-4 p-lg-5 rounded"
         style={{ maxWidth: "500px", width: "100%" }}
       >
-        <h1 className="mb-4 display- fw-bold">Login</h1>
+        <h1 className="mb-4 display-5 fw-bold">Login</h1>
         <p className="text-muted mb-4">
           Don’t have an account yet?{" "}
           <span
@@ -63,7 +70,6 @@ const Login = () => {
           </span>
         </p>
 
-        {/* Form Fields */}
         <form onSubmit={handleSubmit}>
           <div className="mb-3">
             <label htmlFor="username" className="form-label fw-semibold">
@@ -73,10 +79,11 @@ const Login = () => {
               type="text"
               id="username"
               className="form-control shadow-sm"
-              placeholder="Enter your Username"
+              placeholder="Enter your username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
+              aria-describedby="usernameHelp"
             />
           </div>
 
@@ -97,7 +104,11 @@ const Login = () => {
 
           <div className="d-flex align-items-center justify-content-between mb-4">
             <div className="form-check">
-              <input type="checkbox" className="form-check-input" id="rememberMe" />
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="rememberMe"
+              />
               <label className="form-check-label" htmlFor="rememberMe">
                 Remember me
               </label>
@@ -111,7 +122,6 @@ const Login = () => {
             </span>
           </div>
 
-          {/* Sign In Button */}
           <button
             type="submit"
             className="btn btn-dark w-100 py-2 fw-bold shadow-sm"
@@ -121,12 +131,9 @@ const Login = () => {
           </button>
         </form>
 
-        {isError && (
-          <div className="text-danger mt-2">
-            <p>Login failed. Please check your credentials.</p>
-            {error && (
-              <pre>{JSON.stringify(error, null, 2)}</pre> // Display error response from API (for debugging)
-            )}
+        {errorMessage && (
+          <div className="text-danger mt-3">
+            <p>{errorMessage}</p>
           </div>
         )}
       </div>

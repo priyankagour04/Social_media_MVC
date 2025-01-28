@@ -10,8 +10,8 @@ export const profileApi = apiSlice.injectEndpoints({
       }),
     }),
     getProfile: builder.query({
-      query: (userData) => ({
-        url: "auth/signup",
+      query: (us) => ({
+        url: "profile",
         method: "POST",
         body: userData,
       }),

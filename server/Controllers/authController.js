@@ -75,52 +75,53 @@ export const signup = async (req, res) => {
 
 // Login function
 export const login = async (req, res) => {
-  try {
-    const { username, password } = req.body;
+    try {
+        const { username, password } = req.body;
 
-    // Validation
-    if (!username || !password) {
-      return res.status(400).send({
-        success: false,
-        message: "Please fill all fields",
-      });
+        // Validation
+        if (!username || !password) {
+            return res.status(400).json({
+                success: false,
+                message: "Username and password are required.",
+            });
+        }
+
+        // Check if user exists
+        const user = await UserModel.findOne({ username });
+        if (!user) {
+            return res.status(404).json({
+                success: false,
+                message: "User not found.",
+            });
+        }
+
+        // Check password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid credentials.",
+            });
+        }
+
+        // Generate token
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+            expiresIn: "7d",
+        });
+
+        res.status(200).json({
+            success: true,
+            message: "Logged in successfully.",
+            token,
+            user,
+        });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({
+            success: false,
+            message: "Internal server error.",
+            error: error.message,
+        });
     }
-
-    // Check if user exists
-    const user = await UserModel.findOne({ username });
-    if (!user) {
-      return res.status(404).send({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    // Check password
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (!isMatch) {
-      return res.status(400).send({
-        success: false,
-        message: "Invalid Credentials",
-      });
-    }
-
-    // Create JWT token with expiration time 7 days
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
-    });
-
-    res.status(200).send({
-      success: true,
-      message: "User logged in successfully",
-      token,
-      user,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send({
-      success: false,
-      message: "Error in login API",
-      error,
-    });
-  }
 };
+
