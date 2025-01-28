@@ -31,8 +31,8 @@ const Signup = () => {
         localStorage.setItem("username", user.username || username);  // Store username from response or input
         localStorage.setItem("jwtToken", token);  // Store the JWT Token
 
-        // After successful signup, navigate to the login page
-        navigate("/profile");
+        // After successful signup, navigate to the profile page with username
+        navigate(`/profile/${user.username}`);
       } else {
         throw new Error("Signup response missing required fields.");
       }
