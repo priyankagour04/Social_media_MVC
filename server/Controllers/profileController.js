@@ -46,17 +46,18 @@ export const updateProfile = async (req, res) => {
   };
   
   // Get a specific user's profile data using there @username
+  // Backend - Express route
   export const getSpecificUserProfile = async (req, res) => {
-    const { username } = req.params;
+    const userId = req.user.id; // Using the userId from the JWT token
   
     try {
-      const user = await userModel.findOne({ username }).select("-password");
+      const user = await userModel.findById(userId).select("-password"); // Find user by ID (exclude password)
       if (!user) {
         return res.status(404).json({ message: "User not found" });
       }
-      res.status(200).json({ user });
+      res.status(200).json(user); // Send user data
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Error retrieving user profile" });
+      res.status(500).json({ message: "Error fetching user profile" });
     }
   };

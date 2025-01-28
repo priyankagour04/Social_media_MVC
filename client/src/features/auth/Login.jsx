@@ -38,7 +38,7 @@ const Login = () => {
         );
 
         // Navigate to the home page or dashboard
-        navigate("/home", { replace: true });
+        navigate(`/profile/${data.user.username}`, { replace: true });
       } else {
         setErrorMessage("User information is incomplete.");
       }
