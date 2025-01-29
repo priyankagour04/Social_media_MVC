@@ -1,8 +1,8 @@
+// utils/cloudinary.js
 import cloudinary from "cloudinary";
 import fs from "fs";
 import dotenv from "dotenv";
 
-// Load environment variables from the .env file
 dotenv.config();
 
 cloudinary.v2.config({
@@ -14,21 +14,24 @@ cloudinary.v2.config({
 const uploadOnCloudinary = async (localFilePath) => {
   try {
     if (!localFilePath) {
+      console.error("No file path provided.");
       return null;
     }
-    // Upload the file on Cloudinary
+
+    // Upload the image to Cloudinary
     const response = await cloudinary.v2.uploader.upload(localFilePath, {
       resource_type: "auto",
+      use_filename: true,
+      unique_filename: false,
     });
 
-    // File has been uploaded (user profile image)
-    console.log("File uploaded on cloudinary", response.url);
-    return response;
+    console.log("Image uploaded to Cloudinary successfully:", response.secure_url);
+    return { url: response.secure_url };
   } catch (error) {
+    console.error("Error uploading image to Cloudinary:", error);
     if (fs.existsSync(localFilePath)) {
-      fs.unlinkSync(localFilePath); // Remove locally saved temporary file if the upload operation failed
+      fs.unlinkSync(localFilePath); // Cleanup temp image
     }
-    console.error("Error uploading file to Cloudinary:", error);
     return null;
   }
 };

@@ -1,42 +1,84 @@
-
 import userModel from "../Models/userModel.js";
+import uploadOnCloudinary from "../Utils/Cloudinary.js";  // The Cloudinary upload function
 
-// export const createProfile = async (req, res) => {
-//     try {
-//     } catch (error) {}
-//   };
+import fs from 'fs';
+import path from 'path';
 
 
-  
+
 export const updateProfile = async (req, res) => {
   try {
-    const { bio, profilePicture } = req.body; // Optional fields to update
-    const userId = req.params.userId || req.user?.id; // Get userId from URL or JWT
+    const { bio } = req.body;
+    const userId = req.params.userId; // Get the user ID from the request URL
+    console.log(`Updating profile for user: ${userId}`);
 
-    if (!userId) {
-      return res.status(403).json({ message: "Unauthorized, user ID is missing" });
+    // Find the user in the database
+    const user = await userModel.findById(userId);
+    if (!user) {
+      return res.status(404).json({ success: false, message: "User not found" });
     }
 
-    // Find and update user profile
-    const updatedUser = await userModel.findByIdAndUpdate(
-      userId,
-      { bio, profilePicture },
-      { new: true } // Return updated document
-    );
+    // If no new bio is provided, use the existing one
+    user.bio = bio || user.bio;
 
-    if (!updatedUser) {
-      return res.status(404).json({ message: "User not found" });
+    // If profile picture is uploaded, upload it to Cloudinary
+    if (req.file) {
+      console.log("Profile picture file:", req.file);
+      let uploadedImage;
+
+      try {
+        // Upload profile picture to Cloudinary
+        uploadedImage = await uploadOnCloudinary(req.file.path); // Upload to Cloudinary
+        user.profilePicture = uploadedImage.url; // Update the user's profile picture URL
+
+        // Clean up local file after upload to Cloudinary
+        fs.unlinkSync(req.file.path); // Remove the file from the temp directory to avoid file clutter
+      } catch (error) {
+        console.error("Error uploading profile picture:", error.message);
+        return res.status(500).json({ success: false, message: "Image upload failed" });
+      }
     }
 
+    // Save the updated user details in the database
+    await user.save();
+    console.log("User profile successfully updated");
+
+    // Return the updated user data
     res.status(200).json({
-      message: "Profile updated successfully",
-      user: updatedUser,
+      success: true,
+      message: "Profile updated successfully.",
+      data: user,
     });
   } catch (error) {
     console.error("Error updating profile:", error.message);
-    res.status(500).json({ message: "Error updating profile", error: error.message });
+    res.status(500).json({
+      success: false,
+      message: "Error updating profile.",
+      error: error.message,
+    });
   }
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
   

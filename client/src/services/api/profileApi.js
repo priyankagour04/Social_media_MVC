@@ -5,18 +5,17 @@ export const profileApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     editProfile: builder.mutation({
       query: (profileData) => ({
-        url: "profile/edit", // your profile edit route
+        url: `profile/edit/${profileData.userId}`,
         method: "PUT",
         body: profileData,
-        // Adding the Authorization header with JWT
         headers: {
-          "Authorization": `Bearer ${getAccessToken()}`, // Get the JWT token dynamically
+          "Authorization": `Bearer ${getAccessToken()}`,
         },
       }),
     }),
     getProfile: builder.query({
       query: () => ({
-        url: "profile", // no need for username here anymore, backend fetches it based on the JWT token
+        url: "profile",
         method: "GET",
         headers: {
           "Authorization": `Bearer ${getAccessToken()}`, // Using Authorization header for authentication

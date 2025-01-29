@@ -4,11 +4,12 @@ import { FaEdit } from "react-icons/fa";
 import PostCard from "../../components/post/PostCard";
 import { useGetProfileQuery } from "../../services/api/profileApi";
 import profileImg from "../../assets/userProfile.jpg";
+import EditProfile from "./EditProfile";
 
 const ViewProfile = () => {
   const { username } = useParams(); // Get the username from the URL
   const [user, setUser] = useState(null);
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // Hook to navigate between routes
 
   const token = localStorage.getItem("jwtToken");
 
@@ -30,21 +31,29 @@ const ViewProfile = () => {
     return <p>No user found</p>;
   }
 
+  const handleEditProfile = () => {
+    navigate(`/edit-profile/${username}`); // Navigate to the EditProfile page with the username as a route param
+  };
+
   return (
     <div className="min-vh-100 container my-5 rounded-lg">
       {/* Profile Section */}
       <div className="d-flex align-items-center justify-content-around">
         <div className="position-relative text-center">
           <img
-            src={user.profilePicture || profileImg}
+            src={user.profilePicture}
             alt="Profile"
             className="rounded-circle border-5 border-white shadow-lg"
             style={{ width: "160px", height: "160px" }}
           />
-          <h2 className="fw-bold mt-2" style={{ fontSize: "20px" }}>
+          <h2 className="fw-bold mt-4" style={{ fontSize: "20px" }}>
             {user.username}
           </h2>
-          <button className="btn bg-secondary text-white px-4 py-2 mt-5">
+          <p className="mt-3">Indore, Madhya Pradesh</p>
+          <button
+            className="btn bg-secondary text-white px-4 py-2 "
+            onClick={handleEditProfile} // On click, navigate to edit profile
+          >
             <FaEdit className="mr-2" /> Edit Profile
           </button>
         </div>

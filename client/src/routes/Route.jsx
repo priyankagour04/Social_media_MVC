@@ -10,7 +10,7 @@ const routes = {
     isProtected: true,
   },
   editProfile: {
-    path: "/editProfile",
+    path: "/edit-profile/:username",
     element: "EditProfile",
     isProtected: true,
   },
