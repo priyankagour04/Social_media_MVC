@@ -3,9 +3,12 @@ import { useNavigate, useParams } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
 import PostCard from "../../components/post/PostCard";
 import { useGetProfileQuery } from "../../services/api/profileApi";
-import { useGetUserPostsQuery } from "../../services/api/postApi"; // Import the hook for fetching posts
+import { useGetUserPostsQuery } from "../../services/api/postApi"; 
+import CreatePost from "../../components/post/CreatePost";
+
 
 const ViewProfile = () => {
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
   const { username } = useParams(); // Get the username from the URL
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -81,9 +84,13 @@ const ViewProfile = () => {
 
       {/* Recent Posts Section */}
       <div className="my-5">
-        <h3 className="font-weight-bold mb-4">Recent Posts</h3>
+        {/* Button to open the modal */}
+          {/* Modal for creating a post */}
+      <CreatePost showModal={showModal} setShowModal={setShowModal} /> {/* Pass state to CreatePost */}
         <PostCard posts={postsData || []} /> {/* Render the posts fetched by `getUserPosts` */}
       </div>
+
+   
     </div>
   );
 };

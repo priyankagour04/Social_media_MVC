@@ -1,13 +1,12 @@
 import mongoose from "mongoose";
 
-// Post Schema
 const postSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   content: { type: String, required: true },
-  image: { type: String }, // Optional: to store the image URL
+  image: { type: String }, 
   tags: { type: [String] },
   likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }],
-  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }], // References to comments in a separate collection
+  comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   createdAt: { type: Date, default: Date.now },
 });
 
@@ -19,6 +18,5 @@ postSchema.pre(/^find/, function (next) {
   });
   next();
 });
-
 
 export default mongoose.model("Post", postSchema);

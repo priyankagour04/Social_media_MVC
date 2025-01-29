@@ -58,8 +58,6 @@ export const getUserPosts = async (req, res) => {
   }
 };
 
-
-
 export const updatePost = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -118,7 +116,6 @@ export const deletePost = async (req, res) => {
   }
 };
 
-
 export const likePost = async (req, res) => {
   try {
     const { postId } = req.params;
@@ -137,7 +134,9 @@ export const likePost = async (req, res) => {
 
     // Check if the user already liked the post
     if (post.likes.includes(userId)) {
-      return res.status(400).json({ message: "Post already liked by this user." });
+      return res
+        .status(400)
+        .json({ message: "Post already liked by this user." });
     }
 
     // Add user ID to likes

@@ -1,30 +1,36 @@
-import express from 'express';
-import { createPost, deletePost, getAllPosts, getUserPosts, likePost, unlikePost, updatePost } from '../Controllers/postController.js';
-import ensureAuthenticated from '../Middlewares/authMiddleware.js';
+import express from "express";
+import {
+  createPost,
+  deletePost,
+  getAllPosts,
+  getUserPosts,
+  likePost,
+  unlikePost,
+  updatePost,
+} from "../Controllers/postController.js";
+import ensureAuthenticated from "../Middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post('/create', createPost);
+router.post("/create", createPost);
 
 // Route to get all posts
-router.get('/allPosts', ensureAuthenticated, getAllPosts);
+router.get("/allPosts", ensureAuthenticated, getAllPosts);
 
 // Route to get posts by a specific user
 
-router.get('/getPost', ensureAuthenticated, getUserPosts);
-
+router.get("/getPost", ensureAuthenticated, getUserPosts);
 
 // Update a post by post ID
-router.put('/:postId', updatePost);
+router.put("/:postId", updatePost);
 
 // Delete a post by post ID
-router.delete('/:postId', deletePost);
+router.delete("/:postId", deletePost);
 
 // Like a post by post ID
-router.patch('/:postId/like', likePost);
+router.patch("/:postId/like", likePost);
 
 // Unlike a post by post ID
-router.patch('/:postId/unlike', unlikePost);
-
+router.patch("/:postId/unlike", unlikePost);
 
 export default router;

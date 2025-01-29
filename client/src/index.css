@@ -52,7 +52,7 @@
     color: var(--accent-color-blue);
     text-decoration: underline;
   }
-  
+/*   
   button {
     background-color: var(--primary-color);
     color: var(--white);
@@ -61,11 +61,11 @@
     border-radius: 4px;
     cursor: pointer;
     transition: background-color 0.3s ease-in-out;
-  }
+  } */
   
-  button:hover {
+  /* button:hover {
     background-color: var(--gray-dark);
-  }
+  } */
   
   .card {
     background: var(--card-background);
