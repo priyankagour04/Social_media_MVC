@@ -5,7 +5,7 @@ import upload  from "../Middlewares/multerMiddleware.js";
 const router = express.Router();
 
 
-router.put("/edit-profile/:userId", ensureAuthenticated, upload.single("profilePicture") , updateProfile);
+router.put("/edit-profile/", ensureAuthenticated, upload.single("profilePicture") , updateProfile);
 
 
 // get user profile using there @username

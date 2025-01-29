@@ -1,15 +1,18 @@
 import userModel from "../Models/userModel.js";
 import uploadOnCloudinary from "../Utils/Cloudinary.js";  // The Cloudinary upload function
-
+import mongoose from "mongoose";
 import fs from 'fs';
 import path from 'path';
-
-
 
 export const updateProfile = async (req, res) => {
   try {
     const { bio } = req.body;
-    const userId = req.params.userId; // Get the user ID from the request URL
+    const userId = req.user.id;
+
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ success: false, message: "Invalid or missing userId" });
+    }
+
     console.log(`Updating profile for user: ${userId}`);
 
     // Find the user in the database
@@ -58,7 +61,6 @@ export const updateProfile = async (req, res) => {
     });
   }
 };
-
 
 
 

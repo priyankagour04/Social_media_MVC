@@ -5,7 +5,7 @@ export const profileApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     editProfile: builder.mutation({
       query: (profileData) => ({
-        url: `profile/edit/${profileData.userId}`,
+        url: `profile/edit-profile`,  // Ensure your endpoint matches this
         method: "PUT",
         body: profileData,
         headers: {
@@ -18,7 +18,7 @@ export const profileApi = apiSlice.injectEndpoints({
         url: "profile",
         method: "GET",
         headers: {
-          "Authorization": `Bearer ${getAccessToken()}`, // Using Authorization header for authentication
+          "Authorization": `Bearer ${getAccessToken()}`,
         },
       }),
     }),

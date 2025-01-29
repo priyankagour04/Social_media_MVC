@@ -6,18 +6,18 @@ const EditProfile = () => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [bio, setBio] = useState("");
-  const [city, setCity] = useState("");
 
   // Get logged-in user ID from Redux; fallback to localStorage if Redux state is lost
   const userId = useSelector((state) => state.auth.user?.id) || localStorage.getItem("userId");
 
+  // Initialize the mutation
   const [editProfile, { isLoading, isError, error }] = useEditProfileMutation();
 
   // Handle Image Selection & Preview
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file); // Save actual file for uploading
+      setImage(file); // Save the actual file for uploading
       setImagePreview(URL.createObjectURL(file)); // Preview the selected image
     }
   };
@@ -26,24 +26,30 @@ const EditProfile = () => {
   const handleSaveChanges = async (e) => {
     e.preventDefault();
 
+    // Check if userId exists
     if (!userId) {
       console.error("User ID is missing. Cannot update profile.");
       alert("User ID is missing. Please re-login.");
       return;
     }
 
-    if (!bio.trim() || !city.trim()) {
-      alert("Bio and City fields cannot be empty.");
+    if (!bio.trim()) {
+      alert("Bio cannot be empty.");
       return;
     }
 
+    // Create FormData object to send form data, including file
     const formData = new FormData();
-    formData.append("userId", userId);
+    formData.append("userId", userId);  // Ensure that userId is appended to FormData
     formData.append("bio", bio);
-    formData.append("city", city);
-    if (image) formData.append("profilePicture", image); // Append the actual image file
+
+    // Only append image if it's selected
+    if (image) {
+      formData.append("profilePicture", image);  // Append file for profilePicture
+    }
 
     try {
+      // Call the editProfile mutation with the FormData
       await editProfile(formData).unwrap();
       console.log("Profile Updated Successfully");
       alert("Profile updated successfully!");
@@ -94,20 +100,6 @@ const EditProfile = () => {
                 onChange={(e) => setBio(e.target.value)}
                 placeholder="Write something about yourself"
                 rows="4"
-                className="form-control"
-                required
-              />
-            </div>
-
-            {/* City Input */}
-            <div className="mb-4">
-              <label htmlFor="city" className="form-label">City</label>
-              <input
-                type="text"
-                id="city"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="Enter your city"
                 className="form-control"
                 required
               />
