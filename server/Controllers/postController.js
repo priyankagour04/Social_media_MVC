@@ -43,20 +43,22 @@ export const getAllPosts = async (req, res) => {
   }
 };
 
-
-// Get posts by a specific user
+// Get posts by the authenticated user
 export const getUserPosts = async (req, res) => {
+  const userId = req.user.id; // Getting the userId from the authenticated request (req.user)
   try {
     const posts = await postModel
-      .find({ user: req.params.userId })
-      .populate("user", "username email profilePicture") // Include avatar
-      .sort({ createdAt: -1 }); // Sort by newest posts first
+      .find({ user: userId }) // Filter posts by userId from authenticated user
+      .populate("user", "username email profilePicture") // Include related user info
+      .sort({ createdAt: -1 }); // Sort posts by most recent
 
-    res.status(200).json(posts);
+    res.status(200).json(posts); // Send posts data in response
   } catch (error) {
-    res.status(500).json({ message: "Error fetching user posts", error });
+    res.status(500).json({ message: "Error fetching user posts", error }); // Handle error
   }
 };
+
+
 
 export const updatePost = async (req, res) => {
   try {

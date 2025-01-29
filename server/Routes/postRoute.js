@@ -1,15 +1,18 @@
 import express from 'express';
 import { createPost, deletePost, getAllPosts, getUserPosts, likePost, unlikePost, updatePost } from '../Controllers/postController.js';
+import ensureAuthenticated from '../Middlewares/authMiddleware.js';
 
 const router = express.Router();
 
 router.post('/create', createPost);
 
 // Route to get all posts
-router.get('/allPosts', getAllPosts);
+router.get('/allPosts', ensureAuthenticated, getAllPosts);
 
 // Route to get posts by a specific user
-router.get('/getPost/:userId', getUserPosts);
+
+router.get('/getPost', ensureAuthenticated, getUserPosts);
+
 
 // Update a post by post ID
 router.put('/:postId', updatePost);

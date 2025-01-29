@@ -1,4 +1,5 @@
 import { apiSlice } from "../../redux/slices/apiSlice";
+import { getAccessToken } from "../../utility/auth/auth";
 
 const postApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -32,6 +33,18 @@ const postApi = apiSlice.injectEndpoints({
       query: () => "post/allPosts",
     }),
 
+    // Get User's Posts 
+    getUserPosts: builder.query({
+      query: () => ({
+        url: 'post/getPost',
+        method : "GET",
+        headers: {
+          "Authorization": `Bearer ${getAccessToken()}`,
+        },
+      }), 
+      
+    }),
+
     // Endpoint: Like Post
     likePost: builder.mutation({
       query: (postId) => ({
@@ -55,6 +68,7 @@ export const {
   useEditPostMutation,
   useDeletePostMutation,
   useGetPostsQuery,
+  useGetUserPostsQuery,   
   useLikePostMutation,
   useUnlikePostMutation,
 } = postApi;

@@ -1,31 +1,33 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useParams } from "react-router-dom"; // Import useParams to get the username from the URL
+import { useNavigate, useParams } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
 import PostCard from "../../components/post/PostCard";
 import { useGetProfileQuery } from "../../services/api/profileApi";
-import profileImg from "../../assets/userProfile.jpg";
-import EditProfile from "./EditProfile";
+import { useGetUserPostsQuery } from "../../services/api/postApi"; // Import the hook for fetching posts
 
 const ViewProfile = () => {
   const { username } = useParams(); // Get the username from the URL
   const [user, setUser] = useState(null);
-  const navigate = useNavigate(); // Hook to navigate between routes
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("jwtToken");
 
-  const { data, error, isLoading } = useGetProfileQuery(username); // Fetch profile data using the username
+  const { data: profileData, error: profileError, isLoading: isLoadingProfile } = useGetProfileQuery(username); // Fetch profile data using the username
+  const { data: postsData, error: postsError, isLoading: isLoadingPosts } = useGetUserPostsQuery(); // Fetch user's posts
 
   useEffect(() => {
     if (!token) {
       navigate("/"); // If no token, redirect to login
     }
-    if (data) {
-      setUser(data); // Set the user data retrieved from API
-    }
-  }, [data, token, navigate]);
 
-  if (isLoading) return <p>Loading...</p>;
-  if (error) return <p>Error: {error.message}</p>;
+    if (profileData) {
+      setUser(profileData); // Set user data retrieved from the API
+    }
+  }, [profileData, token, navigate]);
+
+  if (isLoadingProfile || isLoadingPosts) return <p>Loading...</p>;
+  if (profileError) return <p>Error: {profileError.message}</p>;
+  if (postsError) return <p>Error: {postsError.message}</p>;
 
   if (!user) {
     return <p>No user found</p>;
@@ -44,35 +46,26 @@ const ViewProfile = () => {
             src={user.profilePicture}
             alt="Profile"
             className="rounded-circle border-5 border-white shadow-lg"
-            style={{ width: "120px", height: "120px" }}
+            style={{ width: "110px", height: "110px" }}
           />
           <h2 className="fw-bold mt-4" style={{ fontSize: "20px" }}>
             {user.username}
           </h2>
           <p className="text-muted mt-2 fw-semibold">{user.bio || "No bio available"}</p>
-
-        
-         
         </div>
 
         <div className="ml-4">
-        
           <div className="d-flex justify-content-between mt-4 gap-5">
             <div className="text-center">
               <h4 className="font-weight-bold">{user.posts?.length || 0}</h4>
               <p className="text-muted">Posts</p>
             </div>
             <div className="text-center">
-              <h4 className="font-weight-bold">
-                {user.followers?.length || 0}
-              </h4>
+              <h4 className="font-weight-bold">{user.followers?.length || 0}</h4>
               <p className="text-muted">Followers</p>
             </div>
             <div className="text-center">
-              <h4 className="font-weight-bold">
-              
-                {user.following?.length || 0}
-              </h4>
+              <h4 className="font-weight-bold">{user.following?.length || 0}</h4>
               <p className="text-muted">Following</p>
             </div>
           </div>
@@ -84,11 +77,12 @@ const ViewProfile = () => {
           </button>
         </div>
       </div>
-      <hr/>
+      <hr />
+
       {/* Recent Posts Section */}
       <div className="my-5">
         <h3 className="font-weight-bold mb-4">Recent Posts</h3>
-        <PostCard posts={user.posts || []} />
+        <PostCard posts={postsData || []} /> {/* Render the posts fetched by `getUserPosts` */}
       </div>
     </div>
   );
