@@ -34,20 +34,24 @@ export const getAllPosts = async (req, res) => {
   try {
     const posts = await postModel
       .find()
-      .populate("user", "username email") // Populates the user info for each post
-      .sort({ createdAt: -1 }); // Sort posts in reverse order
+      .populate("user", "username email profilePicture") // Include avatar
+      .sort({ createdAt: -1 }); // Sort by newest posts first
+
     res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching posts", error });
   }
 };
 
+
 // Get posts by a specific user
 export const getUserPosts = async (req, res) => {
   try {
     const posts = await postModel
       .find({ user: req.params.userId })
-      .populate("user", "username email");
+      .populate("user", "username email profilePicture") // Include avatar
+      .sort({ createdAt: -1 }); // Sort by newest posts first
+
     res.status(200).json(posts);
   } catch (error) {
     res.status(500).json({ message: "Error fetching user posts", error });

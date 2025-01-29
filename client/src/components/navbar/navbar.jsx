@@ -9,6 +9,8 @@ const navbar = () => {
   const handleNavigation = (destination) => {
     navigate(destination);
   };
+
+  const username = localStorage.getItem("username");
   
   return (
     <>
@@ -57,7 +59,7 @@ const navbar = () => {
               className="btn btn-link"
               aria-label="User Profile"
               style={{ color: "var(--white)" }}
-              onClick={() => handleNavigation("/profile")}
+              onClick={() => handleNavigation(`/profile/${username}`)}
             >
               <FaUserCircle size={20} />
             </button>

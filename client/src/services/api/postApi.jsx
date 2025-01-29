@@ -29,7 +29,7 @@ const postApi = apiSlice.injectEndpoints({
 
     // Endpoint: Get All Posts
     getPosts: builder.query({
-      query: () => "post/all",
+      query: () => "post/allPosts",
     }),
 
     // Endpoint: Like Post
