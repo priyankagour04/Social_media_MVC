@@ -30,7 +30,7 @@ const Login = () => {
         // Store user information in localStorage
         localStorage.setItem("userId", data.user._id);  // user._id instead of data.user.id
         localStorage.setItem("jwtToken", data.token);
-        localStorage.setItem("LoggedInUser", data.user.username);
+        localStorage.setItem("username", data.user.username);
 
         // Dispatch user credentials to Redux store for global state management
         dispatch(

@@ -1,61 +1,70 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useEditProfileMutation } from "../../services/api/profileApi";
-import { useSelector } from "react-redux"; // Import Redux selector
+import { useNavigate } from "react-router-dom"; // Import useNavigate
+import { handleSuccess, handleError } from "../../utility/toster/Tostify"; // Import the toast handlers
 
 const EditProfile = () => {
   const [image, setImage] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const [bio, setBio] = useState("");
 
-  // Get logged-in user ID from Redux; fallback to localStorage if Redux state is lost
-  const userId = useSelector((state) => state.auth.user?.id) || localStorage.getItem("userId");
+  const navigate = useNavigate();
 
-  // Initialize the mutation
+  // UseEffect to fetch userId from localStorage if not present in Redux store
+  useEffect(() => {
+    const storedUserId = localStorage.getItem("userId");
+    if (!storedUserId) {
+      console.error("User is not logged in.");
+      handleError("User ID is missing. Please login again.");
+      navigate("/login"); // Redirect to login page if userId is not found
+    }
+  }, [navigate]);
+
+  // Get userId from localStorage
+  const userId = localStorage.getItem("userId"); // Get the userId from localStorage
+  const username = localStorage.getItem("username");
+
+  // Initialize the mutation for profile editing
   const [editProfile, { isLoading, isError, error }] = useEditProfileMutation();
 
-  // Handle Image Selection & Preview
+  // Handle image file selection and preview
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
-      setImage(file); // Save the actual file for uploading
+      setImage(file);
       setImagePreview(URL.createObjectURL(file)); // Preview the selected image
     }
   };
 
-  // Handle Form Submission
+  // Handle form submission
   const handleSaveChanges = async (e) => {
     e.preventDefault();
 
-    // Check if userId exists
-    if (!userId) {
-      console.error("User ID is missing. Cannot update profile.");
-      alert("User ID is missing. Please re-login.");
-      return;
-    }
-
+    // Ensure bio is provided before submitting
     if (!bio.trim()) {
-      alert("Bio cannot be empty.");
+      handleError("Bio cannot be empty.");
       return;
     }
 
-    // Create FormData object to send form data, including file
+    // Create FormData for profile update, including profile picture and bio
     const formData = new FormData();
-    formData.append("userId", userId);  // Ensure that userId is appended to FormData
+    formData.append("userId", userId);
     formData.append("bio", bio);
 
-    // Only append image if it's selected
     if (image) {
-      formData.append("profilePicture", image);  // Append file for profilePicture
+      formData.append("profilePicture", image); // Append profile picture if selected
     }
 
     try {
-      // Call the editProfile mutation with the FormData
       await editProfile(formData).unwrap();
       console.log("Profile Updated Successfully");
-      alert("Profile updated successfully!");
+      handleSuccess("Profile updated successfully!");
+
+      // Navigate to the profile page with the username or userId
+      navigate(`/profile/${username}`);  // Redirect to the user profile with their specific userId
     } catch (err) {
       console.log("Error updating profile:", err);
-      alert("Failed to update profile. Please try again.");
+      handleError("Failed to update profile. Please try again.");
     }
   };
 
@@ -68,7 +77,7 @@ const EditProfile = () => {
         <div className="card-body">
           <form onSubmit={handleSaveChanges}>
             {/* Image Upload */}
-            <div className="mb-4">
+            <div className="mb-4" style={{ marginTop: "10px" }}>
               <label htmlFor="profileImage" className="form-label">
                 Profile Image
               </label>
@@ -85,14 +94,14 @@ const EditProfile = () => {
                     src={imagePreview}
                     alt="Profile"
                     className="img-thumbnail rounded-circle"
-                    style={{ width: "150px", height: "150px", objectFit: "cover" }}
+                    style={{ width: "120px", height: "120px", objectFit: "cover", marginTop: "10px" }}
                   />
                 </div>
               )}
             </div>
 
             {/* Bio Input */}
-            <div className="mb-4">
+            <div className="mb-4" style={{ marginTop: "10px" }}>
               <label htmlFor="bio" className="form-label">Bio</label>
               <textarea
                 id="bio"
