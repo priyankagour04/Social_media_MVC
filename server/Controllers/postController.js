@@ -3,7 +3,8 @@ import userModel from "../Models/userModel.js";
 
 export const createPost = async (req, res) => {
   try {
-    const { userId, content, image, tags } = req.body;
+    const userId = req.user.id; // Get the user ID from the authenticated request
+    const { content, image, tags } = req.body;
 
     // Find user in the database
     const user = await userModel.findById(userId);
@@ -11,7 +12,7 @@ export const createPost = async (req, res) => {
 
     // Create a new post
     const post = new postModel({
-      user: userId,
+      user: userId, // Use 'user' instead of 'userId' to match the schema
       content,
       image,
       tags,
@@ -20,14 +21,20 @@ export const createPost = async (req, res) => {
     await post.save();
 
     // Add post to the user's list of posts
-    user.posts.push(post._id); // We are assuming you added 'posts' in the user model
+    user.posts.push(post._id); // Assuming you added 'posts' in the user model
     await user.save();
 
     res.status(201).json(post);
   } catch (error) {
-    res.status(500).json({ message: "Error creating post", error });
+    console.error("Error creating post:", error); // Log the error for debugging
+    res.status(500).json({
+      message: "Error creating post",
+      error: error.message || error, // Provide the error message if available
+    });
   }
 };
+
+
 
 // Get all posts
 export const getAllPosts = async (req, res) => {

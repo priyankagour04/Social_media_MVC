@@ -1,15 +1,25 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Modal, Button } from "react-bootstrap";
-import { useSelector } from "react-redux"; 
+import { useSelector } from "react-redux";
+import { useAddPostMutation } from "../../services/api/postApi";
 
 const CreatePost = ({ onPostCreated }) => {
   const [showModal, setShowModal] = useState(false); // State for showing the modal
-  const [title, setTitle] = useState("");
   const [content, setContent] = useState(""); // State for the post content
   const [image, setImage] = useState(""); // State for the image URL (for uploaded images)
   const [tags, setTags] = useState([]); // State for post tags (array of strings)
 
-  const user = useSelector((state) => state.auth.user); // Assume user's data is stored in redux state
+  const user = useSelector((state) => state.auth.user);
+
+  const [addPost, { isLoading, isError, isSuccess }] = useAddPostMutation(); // Using RTK Query's addPost mutation hook
+
+  useEffect(() => {
+    if (isSuccess) {
+      console.log("Post created successfully!");
+      onPostCreated(); // Callback function to close the modal or refresh the posts list
+      setShowModal(false); // Close modal on successful post
+    }
+  }, [isSuccess, onPostCreated]);
 
   // Handle file upload (get image file and upload)
   const handleImageUpload = (e) => {
@@ -35,10 +45,10 @@ const CreatePost = ({ onPostCreated }) => {
   };
 
   // Handle form submission
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    if (!title || !content) {
-      alert("Title and Content are required!");
+    if (!content) {
+      alert("Content is required!");
     } else {
       // Create post object according to the schema
       const postData = {
@@ -48,31 +58,13 @@ const CreatePost = ({ onPostCreated }) => {
         tags,
       };
 
-      // Submit post data (assuming you have an API call function)
-      try {
-        const response = await fetch("/api/posts", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(postData),
-        });
-
-        if (response.ok) {
-          console.log("Post created successfully!");
-          onPostCreated(); // Callback function to close the modal or refresh the posts list
-          setShowModal(false); // Close modal on successful post
-        } else {
-          console.log("Post creation failed.");
-        }
-      } catch (error) {
-        console.error("Error creating post:", error);
-      }
+      // Use RTK Query's addPost mutation to submit post data
+      addPost(postData);
     }
   };
 
   const handleTagChange = (e) => {
-    setTags(e.target.value.split(",").map(tag => tag.trim())); // Split by commas and remove extra spaces
+    setTags(e.target.value.split(",").map((tag) => tag.trim())); // Split by commas and remove extra spaces
   };
 
   return (
@@ -89,7 +81,6 @@ const CreatePost = ({ onPostCreated }) => {
         <Modal.Body>
           {/* Form inside the modal */}
           <form onSubmit={handleSubmit}>
-           
             <div className="mb-3">
               <label htmlFor="content" className="form-label">
                 Content:
@@ -105,7 +96,7 @@ const CreatePost = ({ onPostCreated }) => {
             </div>
             <div className="mb-3">
               <label htmlFor="image" className="form-label">
-                Image (Upload from computer )
+                Image (Upload from computer)
               </label>
               <input
                 type="file"
@@ -129,8 +120,8 @@ const CreatePost = ({ onPostCreated }) => {
                 placeholder="Enter tags (optional)"
               />
             </div>
-            <Button type="submit" variant="primary">
-              Create Post
+            <Button type="submit" variant="primary" disabled={isLoading}>
+              {isLoading ? "Creating..." : "Create Post"}
             </Button>
           </form>
         </Modal.Body>

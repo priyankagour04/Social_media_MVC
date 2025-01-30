@@ -12,7 +12,7 @@ import ensureAuthenticated from "../Middlewares/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/create", createPost);
+router.post("/create",ensureAuthenticated , createPost);
 
 // Route to get all posts
 router.get("/allPosts", ensureAuthenticated, getAllPosts);
