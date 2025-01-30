@@ -2,7 +2,7 @@ import express from "express";
 import {
   createPost,
   deletePost,
-  getAllPosts,  
+  getAllPosts,
   getUserPosts,
   likePost,
   unlikePost,
@@ -13,7 +13,7 @@ import upload from "../Middlewares/multerMiddleware.js";
 
 const router = express.Router();
 
-router.post("/create",ensureAuthenticated , upload.single("image"), createPost);
+router.post("/create", ensureAuthenticated, upload.single("image"), createPost);
 
 // Route to get all posts
 router.get("/allPosts", ensureAuthenticated, getAllPosts);
@@ -29,9 +29,9 @@ router.put("/:postId", updatePost);
 router.delete("/:postId", deletePost);
 
 // Like a post by post ID
-router.patch("/:postId/like", likePost);
+router.patch("/:postId/like", ensureAuthenticated, likePost);
 
 // Unlike a post by post ID
-router.patch("/:postId/unlike", unlikePost);
+router.patch("/:postId/unlike", ensureAuthenticated, unlikePost);
 
 export default router;

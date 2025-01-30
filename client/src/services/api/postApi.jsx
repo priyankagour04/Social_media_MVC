@@ -9,7 +9,7 @@ const postApi = apiSlice.injectEndpoints({
         method: "POST",
         body: postData,
         headers: {
-          "Authorization": `Bearer ${getAccessToken()}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       }),
     }),
@@ -36,31 +36,36 @@ const postApi = apiSlice.injectEndpoints({
       query: () => "post/allPosts",
     }),
 
-    // Get User's Posts 
+    // Get User's Posts
     getUserPosts: builder.query({
       query: () => ({
-        url: 'post/getPost',
-        method : "GET",
+        url: "post/getPost",
+        method: "GET",
         headers: {
-          "Authorization": `Bearer ${getAccessToken()}`,
+          Authorization: `Bearer ${getAccessToken()}`,
         },
-      }), 
-      
+      }),
     }),
 
     // Endpoint: Like Post
     likePost: builder.mutation({
       query: (postId) => ({
-        url: `post/like/${postId}`,
+      url: `/post/${postId}/like`,
         method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
       }),
     }),
 
     // Endpoint: Unlike Post
     unlikePost: builder.mutation({
       query: (postId) => ({
-        url: `post/unlike/${postId}`,
+        url: `/post/${postId}/unlike`,
         method: "PATCH",
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
       }),
     }),
   }),
@@ -71,7 +76,7 @@ export const {
   useEditPostMutation,
   useDeletePostMutation,
   useGetPostsQuery,
-  useGetUserPostsQuery,   
+  useGetUserPostsQuery,
   useLikePostMutation,
   useUnlikePostMutation,
 } = postApi;

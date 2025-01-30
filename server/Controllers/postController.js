@@ -181,7 +181,7 @@ export const deletePost = async (req, res) => {
 export const likePost = async (req, res) => {
   try {
     const { postId } = req.params;
-    const { userId } = req.body; // Assuming user ID is passed in the body
+    const userId = req.user.id; 
 
     // Validate input
     if (!userId) {
@@ -218,7 +218,7 @@ export const likePost = async (req, res) => {
 export const unlikePost = async (req, res) => {
   try {
     const { postId } = req.params;
-    const { userId } = req.body; // Assuming user ID is passed in the body
+    const userId = req.user.id;
 
     // Find the post
     const post = await postModel.findById(postId);

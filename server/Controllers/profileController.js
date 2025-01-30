@@ -83,11 +83,37 @@ export const updateProfile = async (req, res) => {
 
 
 
+  // get any user's profile by username
   
-  export const getUserProfile = async (req, res) => {
-    try {
-    } catch (error) {}
-  };
+export const getUserProfile = async (req, res) => {
+  try {
+    const { username } = req.params; // Get the username from the URL params
+
+    // Check if the username is not the same as the logged-in user's username
+    if (req.user.username === username) {
+      return res.status(400).json({ message: "You can't search for your own profile." });
+    }
+
+    // Query the database for the user by username
+    const user = await userModel.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' }); // If user doesn't exist
+    }
+
+    // If user found, return user data (you can modify this as per your needs)
+    return res.status(200).json({
+      id: user._id,
+      username: user.username,
+      email: user.email,
+      profilePicture: user.profilePicture, // Example field, add more as needed
+      // Any other necessary user details
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Server Error' }); // General error handling
+  }
+};
 
 
   
