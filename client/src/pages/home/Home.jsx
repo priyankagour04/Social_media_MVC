@@ -33,7 +33,7 @@ const Home = () => {
         {posts && posts.length > 0 ? (
           <div className="row g-3">
             {posts.map((post) => (
-              <div key={post.id} className="col-md-4"> {/* Two columns per row */}
+              <div key={post.id} className="col-md-6"> 
                 <PostCard posts={[post]} />  
               </div>
             ))}

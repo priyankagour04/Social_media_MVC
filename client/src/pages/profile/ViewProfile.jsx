@@ -84,7 +84,7 @@ const ViewProfile = () => {
 
       {/* Recent Posts Section */}
       <div className="my-5">
-        {/* Button to open the modal */}
+       
           {/* Modal for creating a post */}
       <CreatePost showModal={showModal} setShowModal={setShowModal} /> {/* Pass state to CreatePost */}
         <PostCard posts={postsData || []} /> {/* Render the posts fetched by `getUserPosts` */}
