@@ -1,5 +1,5 @@
 import express from "express";
-import { getSpecificUserProfile, updateProfile } from "../Controllers/profileController.js";
+import { getProfile, updateProfile } from "../Controllers/profileController.js";
 import ensureAuthenticated from "../Middlewares/authMiddleware.js";
 import upload  from "../Middlewares/multerMiddleware.js";
 const router = express.Router();
@@ -9,7 +9,7 @@ router.put("/edit-profile/", ensureAuthenticated, upload.single("profilePicture"
 
 
 // get user profile using there @username
-router.get("/", ensureAuthenticated, getSpecificUserProfile);
+router.get("/", ensureAuthenticated, getProfile);
 
 
 export default router;

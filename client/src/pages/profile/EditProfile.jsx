@@ -21,13 +21,12 @@ const EditProfile = () => {
   }, [navigate]);
 
   // Get userId from localStorage
-  const userId = localStorage.getItem("userId"); // Get the userId from localStorage
+  const userId = localStorage.getItem("userId"); 
   const username = localStorage.getItem("username");
 
-  // Initialize the mutation for profile editing
+
   const [editProfile, { isLoading, isError, error }] = useEditProfileMutation();
 
-  // Handle image file selection and preview
   const handleImageChange = (e) => {
     const file = e.target.files[0];
     if (file) {
@@ -52,7 +51,7 @@ const EditProfile = () => {
     formData.append("bio", bio);
 
     if (image) {
-      formData.append("profilePicture", image); // Append profile picture if selected
+      formData.append("profilePicture", image); 
     }
 
     try {
@@ -60,8 +59,8 @@ const EditProfile = () => {
       console.log("Profile Updated Successfully");
       handleSuccess("Profile updated successfully!");
 
-      // Navigate to the profile page with the username or userId
-      navigate(`/profile/${username}`);  // Redirect to the user profile with their specific userId
+  
+      navigate(`/profile/${username}`);  
     } catch (err) {
       console.log("Error updating profile:", err);
       handleError("Failed to update profile. Please try again.");

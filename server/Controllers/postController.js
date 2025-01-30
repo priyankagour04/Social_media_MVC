@@ -1,30 +1,34 @@
 import postModel from "../Models/postModel.js";
 import userModel from "../Models/userModel.js";
+import uploadOnCloudinary from "../Utils/Cloudinary.js";
 
+
+// uploading image directly from frontend to cloudinary 
 export const createPost = async (req, res) => {
   try {
-    const userId = req.user.id; // Get the user ID from the authenticated request
-    const { content, image, tags } = req.body;
+    const userId = req.user.id; 
+    const { content, tags, image } = req.body; 
 
-    // Find user in the database
     const user = await userModel.findById(userId);
     if (!user) return res.status(404).json({ message: "User not found" });
 
+    let imageUrl = image || "";
+
     // Create a new post
     const post = new postModel({
-      user: userId, // Use 'user' instead of 'userId' to match the schema
+      user: userId,
       content,
-      image,
+      image: imageUrl, // Store the image URL in the database
       tags,
     });
 
     await post.save();
 
     // Add post to the user's list of posts
-    user.posts.push(post._id); // Assuming you added 'posts' in the user model
+    user.posts.push(post._id); 
     await user.save();
 
-    res.status(201).json(post);
+    res.status(201).json(post); // Send the created post back in the response
   } catch (error) {
     console.error("Error creating post:", error); // Log the error for debugging
     res.status(500).json({
@@ -33,6 +37,57 @@ export const createPost = async (req, res) => {
     });
   }
 };
+
+
+// uploading the image from backend to cloudinary
+
+
+// export const createPost = async (req, res) => {
+//   try {
+//     const userId = req.user.id; 
+//     const { content, tags } = req.body;
+//     const imageFile = req.file; 
+
+//     // Find user in the database
+//     const user = await userModel.findById(userId);
+//     if (!user) return res.status(404).json({ message: "User not found" });
+
+//     let imageUrl = ""; // Initialize imageUrl to empty string
+
+//     // If an image file is provided, upload it to Cloudinary
+//     if (imageFile) {
+//       const uploadResult = await uploadOnCloudinary(imageFile.path); // Upload image to Cloudinary
+
+//       if (uploadResult) {
+//         imageUrl = uploadResult.url; // Store the URL of the uploaded image
+//       } else {
+//         return res.status(500).json({ message: "Error uploading image to Cloudinary" });
+//       }
+//     }
+
+//     // Create a new post
+//     const post = new postModel({
+//       user: userId, // Use 'user' instead of 'userId' to match the schema
+//       content,
+//       image: imageUrl, // Store the image URL in the database
+//       tags,
+//     });
+
+//     await post.save();
+
+//     // Add post to the user's list of posts
+//     user.posts.push(post._id); // Assuming you added 'posts' in the user model
+//     await user.save();
+
+//     res.status(201).json(post);
+//   } catch (error) {
+//     console.error("Error creating post:", error); // Log the error for debugging
+//     res.status(500).json({
+//       message: "Error creating post",
+//       error: error.message || error, // Provide the error message if available
+//     });
+//   }
+// };
 
 
 
@@ -52,14 +107,14 @@ export const getAllPosts = async (req, res) => {
 
 // Get posts by the authenticated user
 export const getUserPosts = async (req, res) => {
-  const userId = req.user.id; // Getting the userId from the authenticated request (req.user)
+  const userId = req.user.id; 
   try {
     const posts = await postModel
-      .find({ user: userId }) // Filter posts by userId from authenticated user
-      .populate("user", "username email profilePicture") // Include related user info
+      .find({ user: userId }) 
+      .populate("user", "username email profilePicture") 
       .sort({ createdAt: -1 }); // Sort posts by most recent
 
-    res.status(200).json(posts); // Send posts data in response
+    res.status(200).json(posts); 
   } catch (error) {
     res.status(500).json({ message: "Error fetching user posts", error }); // Handle error
   }

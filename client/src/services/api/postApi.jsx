@@ -8,6 +8,9 @@ const postApi = apiSlice.injectEndpoints({
         url: "post/create",
         method: "POST",
         body: postData,
+        headers: {
+          "Authorization": `Bearer ${getAccessToken()}`,
+        },
       }),
     }),
 

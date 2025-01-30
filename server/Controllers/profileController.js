@@ -88,10 +88,12 @@ export const updateProfile = async (req, res) => {
     try {
     } catch (error) {}
   };
+
+
   
   // Get a specific user's profile data using there @username
   // Backend - Express route
-  export const getSpecificUserProfile = async (req, res) => {
+  export const getProfile = async (req, res) => {
     const userId = req.user.id; // Using the userId from the JWT token
   
     try {

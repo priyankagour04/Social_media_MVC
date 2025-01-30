@@ -2,17 +2,18 @@ import express from "express";
 import {
   createPost,
   deletePost,
-  getAllPosts,
+  getAllPosts,  
   getUserPosts,
   likePost,
   unlikePost,
   updatePost,
 } from "../Controllers/postController.js";
 import ensureAuthenticated from "../Middlewares/authMiddleware.js";
+import upload from "../Middlewares/multerMiddleware.js";
 
 const router = express.Router();
 
-router.post("/create",ensureAuthenticated , createPost);
+router.post("/create",ensureAuthenticated , upload.single("image"), createPost);
 
 // Route to get all posts
 router.get("/allPosts", ensureAuthenticated, getAllPosts);
