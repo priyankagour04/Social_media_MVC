@@ -16,7 +16,13 @@ export const authApi = apiSlice.injectEndpoints({
         body: userData,
       }),
     }),
+    verifyEmail: builder.query({
+      query: (token) => ({
+        url: `auth/verify-email/${token}`,
+        method: "GET",
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useSignupMutation } = authApi;
+export const { useLoginMutation, useSignupMutation, useVerifyEmailQuery } = authApi;

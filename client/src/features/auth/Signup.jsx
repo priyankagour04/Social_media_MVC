@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useSignupMutation } from "../../services/api/authAPI";
+import { Modal, Button } from "react-bootstrap"; // Importing modal component
 
 const Signup = () => {
   const navigate = useNavigate();
@@ -8,6 +9,7 @@ const Signup = () => {
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [showModal, setShowModal] = useState(false); // State to control modal visibility
 
   const [signup, { data, isLoading, isError, error }] = useSignupMutation();
 
@@ -31,8 +33,8 @@ const Signup = () => {
         localStorage.setItem("username", user.username || username);  // Store username from response or input
         localStorage.setItem("jwtToken", token);  // Store the JWT Token
 
-        // After successful signup, navigate to the profile page with username
-        navigate(`/profile/${user.username}`);
+        // Show the modal after successful signup
+        setShowModal(true); // Show the modal here after successful signup
       } else {
         throw new Error("Signup response missing required fields.");
       }
@@ -40,6 +42,8 @@ const Signup = () => {
       console.error("Signup failed:", err);
     }
   };
+
+  const handleCloseModal = () => setShowModal(false); // Close modal handler
 
   return (
     <div className="vh-100 d-flex justify-content-center align-items-center bg-light">
@@ -121,11 +125,31 @@ const Signup = () => {
             <p>{error?.data?.message || "Signup failed. Please try again."}</p>
           </div>
         )}
+        
         {data && !isLoading && !isError && (
           <div className="text-success mt-2">
-            <p>Signup successful! Redirecting to login...</p>
+            <p>Signup successful! Please check your email to verify your account.</p>
           </div>
         )}
+
+        {/* Modal for email verification */}
+        <Modal show={showModal} onHide={handleCloseModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Signup Successful</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>Your account has been created successfully! Please check your email to verify your account before logging in.</p>
+            <p>If you don't see the email, check your spam folder.</p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleCloseModal}>
+              Close
+            </Button>
+            <Button variant="primary" onClick={() => navigate("/")}>
+              Go to Login
+            </Button>
+          </Modal.Footer>
+        </Modal>
       </div>
     </div>
   );

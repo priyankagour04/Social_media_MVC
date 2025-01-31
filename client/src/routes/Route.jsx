@@ -49,6 +49,11 @@ const routes = {
     element: "Signup",
     isProtected: false,
   },
+  verifyEmail: {
+    path: "/verify-email/:token",
+    element: "VerifyEmail",
+    isProtected: false,
+  },
   forgetPassword: {
     path: "/forget",
     element: "ForgetPassword",

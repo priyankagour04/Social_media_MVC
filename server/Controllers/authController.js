@@ -1,7 +1,6 @@
 import jwt from "jsonwebtoken"; // Import JSON Web Token generation
 import bcrypt from "bcrypt";
-import UserModel from "../Models/userModel.js"; // Ensure the import ends with .js
-import userModel from "../Models/userModel.js";
+import UserModel from "../Models/userModel.js";
 import sendVerificationEmail from "../Config/mailer.js";
 
 // verify email
@@ -57,17 +56,19 @@ export const signup = async (req, res) => {
     // Save the user
     await user.save();
 
-    // Generate a JWT token for email verification
+    // Generate a JWT token for email verification (not for login)
     const token = jwt.sign({ id: user._id, email: user.email }, process.env.JWT_SECRET, {
       expiresIn: '1h', // Token expires in 1 hour
     });
 
-    // Send verification email
+    // Send verification email with the token
     await sendVerificationEmail(user.email, token);
 
+    // Send response with the token for the client to proceed with email verification
     res.status(201).json({
       message: "Signup successful. Please check your email to verify your account.",
       success: true,
+      token, // Send the email verification token
     });
   } catch (err) {
     console.error("Error in signup:", err);
@@ -78,6 +79,7 @@ export const signup = async (req, res) => {
     });
   }
 };
+
 
 // Login function
 export const login = async (req, res) => {

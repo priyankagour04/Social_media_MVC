@@ -11,6 +11,7 @@ import FollowerList from "../pages/connections/FollowerList.jsx";
 import FollowingList from "../pages/connections/FollowingList.jsx";
 import Navbar from "../components/navbar/navbar.jsx";
 import UserProfile from "../pages/profile/UserProfile.jsx";
+import VerifyEmail from "../features/VerifyEmail.jsx";
 // Lazy load components for better performance
 const Login = lazy(() => import("../features/auth/Login.jsx"));
 const SignUp = lazy(() => import("../features/auth/Signup.jsx"));
@@ -29,6 +30,14 @@ const AppRoutes = () => (
 
         {/* Protected Routes */}
         <Route
+          path={routes.verifyEmail.path}
+          element={
+            <ProtectedRoute>
+              <VerifyEmail />
+            </ProtectedRoute>
+          }
+        />
+        <Route
           path={routes.home.path}
           element={
             <ProtectedRoute>
@@ -41,16 +50,16 @@ const AppRoutes = () => (
           path={routes.profile.path}
           element={
             <ProtectedRoute>
-               <Navbar />
+              <Navbar />
               <ViewProfile />
             </ProtectedRoute>
           }
         />
-          <Route
+        <Route
           path={routes.userProfile.path}
           element={
             <ProtectedRoute>
-               <Navbar />
+              <Navbar />
               <UserProfile />
             </ProtectedRoute>
           }
@@ -68,7 +77,7 @@ const AppRoutes = () => (
           path={routes.search.path}
           element={
             <ProtectedRoute>
-               <Navbar />
+              <Navbar />
               <Search />
             </ProtectedRoute>
           }
@@ -78,7 +87,7 @@ const AppRoutes = () => (
           path={routes.notifications.path}
           element={
             <ProtectedRoute>
-               <Navbar />
+              <Navbar />
               <Notification />
             </ProtectedRoute>
           }
