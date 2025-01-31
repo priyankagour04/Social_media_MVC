@@ -241,3 +241,26 @@ export const unlikePost = async (req, res) => {
     res.status(500).json({ message: "Error unliking the post.", error });
   }
 };
+
+
+// get another user's post by searcing there profile 
+export const getUserPostsByUsername = async (req, res) => {
+  try {
+    const { username } = req.params; // Extract username from params
+
+    // Find user by username
+    const user = await userModel.findOne({ username });
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Fetch posts associated with the user ID
+    const posts = await postModel.find({ user: user._id }).sort({ createdAt: -1 });
+
+    return res.status(200).json(posts);
+  } catch (error) {
+    console.error("Error fetching user posts:", error);
+    return res.status(500).json({ message: "Server error" });
+  }
+};

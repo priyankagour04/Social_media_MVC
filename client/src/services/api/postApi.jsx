@@ -68,6 +68,16 @@ const postApi = apiSlice.injectEndpoints({
         },
       }),
     }),
+    // Get Posts of a Specific User by Username
+    getUserPostsByUsername: builder.query({
+      query: (username) => ({
+        url: `post/getUserPost/${username}`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      }),
+    }),
   }),
 });
 
@@ -79,4 +89,5 @@ export const {
   useGetUserPostsQuery,
   useLikePostMutation,
   useUnlikePostMutation,
+  useGetUserPostsByUsernameQuery
 } = postApi;

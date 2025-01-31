@@ -107,7 +107,10 @@ export const getUserProfile = async (req, res) => {
       username: user.username,
       email: user.email,
       profilePicture: user.profilePicture, // Example field, add more as needed
-      // Any other necessary user details
+      bio : user.bio,
+      posts : user.posts,
+      followers : user.followers,
+      following : user.following,
     });
   } catch (error) {
     console.error(error);

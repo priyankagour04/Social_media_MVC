@@ -12,7 +12,7 @@ router.put("/edit-profile/", ensureAuthenticated, upload.single("profilePicture"
 router.get("/", ensureAuthenticated, getProfile);
 
 
-router.get('/:username', ensureAuthenticated, getUserProfile);
+router.get('/user/:username', ensureAuthenticated, getUserProfile);
 
 
 export default router;

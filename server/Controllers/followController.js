@@ -114,3 +114,27 @@ export const rejectFollowRequest = async (req, res) => {
     res.status(500).json({ message: "Error rejecting follow request." });
   }
 };
+
+
+export const getFollowers = async (req, res) => {
+  try {
+    const { userId } = req.params; // Extract userId from request parameters
+
+    // Find the user by ID and populate the followers field with user details
+    const user = await userModel.findById(userId).populate("followers", "username email profilePicture");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: `Here are the followers of ${user.username}`,
+      followers: user.followers,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong!", error });
+  }
+};
+
+

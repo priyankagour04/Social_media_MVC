@@ -9,6 +9,11 @@ const routes = {
     element: "ViewProfile",
     isProtected: true,
   },
+  userProfile: {
+    path: "/profile/user/:username",
+    element: "UserProfile",
+    isProtected: true,
+  },
   editProfile: {
     path: "/edit-profile/:username",
     element: "EditProfile",

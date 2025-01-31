@@ -5,7 +5,6 @@ import PostCard from "../../components/post/PostCard";
 import { useGetProfileQuery } from "../../services/api/profileApi";
 import { useGetUserPostsQuery } from "../../services/api/postApi";
 import CreatePost from "../../components/post/CreatePost";
-import { useSelector } from "react-redux";
 
 const ViewProfile = () => {
   const [showModal, setShowModal] = useState(false); // Manage modal visibility here
@@ -13,8 +12,6 @@ const ViewProfile = () => {
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   const token = localStorage.getItem("jwtToken");
-
-  const authUserId = useSelector((state) => state.auth.user?._id);
 
   const { data: profileData, error: profileError, isLoading: isLoadingProfile } = useGetProfileQuery(username);
   const { data: postsData, error: postsError, isLoading: isLoadingPosts } = useGetUserPostsQuery();
@@ -39,15 +36,6 @@ const ViewProfile = () => {
 
   const handleEditProfile = () => {
     navigate(`/edit-profile/${username}`);
-  };
-
-  // Function to chunk posts into groups of 3
-  const chunkPosts = (posts, size) => {
-    const chunks = [];
-    for (let i = 0; i < posts.length; i += size) {
-      chunks.push(posts.slice(i, i + size));
-    }
-    return chunks;
   };
 
   return (
@@ -95,17 +83,7 @@ const ViewProfile = () => {
       {/* Recent Posts Section */}
       <div className="my-5">
         <CreatePost showModal={showModal} setShowModal={setShowModal} />
-        
-        {/* Using Bootstrap grid system to display 3 posts per row */}
-        <div className="row g-3">
-          {chunkPosts(postsData || [], 3).map((postGroup, index) => (
-            <div className="col-lg-6" key={index}>
-              {postGroup.map((post) => (
-                <PostCard key={post._id} posts={[post]} authUserId={authUserId} />
-              ))}
-            </div>
-          ))}
-        </div>
+        <PostCard posts={postsData || []} />
       </div>
     </div>
   );

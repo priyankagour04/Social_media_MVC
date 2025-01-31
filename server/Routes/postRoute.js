@@ -4,6 +4,7 @@ import {
   deletePost,
   getAllPosts,
   getUserPosts,
+  getUserPostsByUsername,
   likePost,
   unlikePost,
   updatePost,
@@ -33,5 +34,8 @@ router.patch("/:postId/like", ensureAuthenticated, likePost);
 
 // Unlike a post by post ID
 router.patch("/:postId/unlike", ensureAuthenticated, unlikePost);
+
+
+router.get("/getUserPost/:username", ensureAuthenticated, getUserPostsByUsername);
 
 export default router;

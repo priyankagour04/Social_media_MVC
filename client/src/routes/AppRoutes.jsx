@@ -10,6 +10,7 @@ import EditProfile from "../pages/profile/EditProfile.jsx";
 import FollowerList from "../pages/connections/FollowerList.jsx";
 import FollowingList from "../pages/connections/FollowingList.jsx";
 import Navbar from "../components/navbar/navbar.jsx";
+import UserProfile from "../pages/profile/UserProfile.jsx";
 // Lazy load components for better performance
 const Login = lazy(() => import("../features/auth/Login.jsx"));
 const SignUp = lazy(() => import("../features/auth/Signup.jsx"));
@@ -42,6 +43,15 @@ const AppRoutes = () => (
             <ProtectedRoute>
                <Navbar />
               <ViewProfile />
+            </ProtectedRoute>
+          }
+        />
+          <Route
+          path={routes.userProfile.path}
+          element={
+            <ProtectedRoute>
+               <Navbar />
+              <UserProfile />
             </ProtectedRoute>
           }
         />

@@ -1,54 +1,91 @@
-import React, { useState } from 'react';
-import { Card, Button, Row, Col, Form } from 'react-bootstrap';
-import '../../style/search.css';
+import React, { useState } from "react";
+import { Card, Form, Spinner } from "react-bootstrap";
+import { useNavigate } from "react-router-dom";
+import "../../style/search.css";
+import { useGetUserProfileQuery } from "../../services/api/profileApi"; // ✅ Correct import
 
 const Explorer = () => {
-  // Dummy data for Newly Added and Trending Content
-  const newlyAddedContent = [
-    { id: 1, title: 'New Post Title 1', content: 'This is the newly added post description.', image: 'https://via.placeholder.com/300' },
-    { id: 2, title: 'New Post Title 2', content: 'Another newly added post description.', image: 'https://via.placeholder.com/300' },
-    { id: 3, title: 'New Post Title 3', content: 'New content in the newly added category.', image: 'https://via.placeholder.com/300' },
-  ];
+  const [searchQuery, setSearchQuery] = useState("");
+  const navigate = useNavigate();
 
-  const trendingContent = [
-    { id: 1, title: 'Trending Post Title 1', content: 'This is the description of trending content.', image: 'https://via.placeholder.com/300' },
-    { id: 2, title: 'Trending Post Title 2', content: 'Another trendy post that\'s popular right now.', image: 'https://via.placeholder.com/300' },
-    { id: 3, title: 'Trending Post Title 3', content: 'People are talking about this trending content.', image: 'https://via.placeholder.com/300' },
-  ];
-
-  const [searchQuery, setSearchQuery] = useState('');
+  // ✅ Fetch user profile using RTK Query
+  const {
+    data: user,
+    error,
+    isLoading,
+  } = useGetUserProfileQuery(
+    { username: searchQuery }, // ✅ Pass an object, matching API slice
+    { skip: !searchQuery } // ✅ Skip API call when searchQuery is empty
+  );
 
   const handleSearch = (e) => {
     setSearchQuery(e.target.value);
   };
 
-  const filterContent = (content) => {
-    return content.filter((post) =>
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.content.toLowerCase().includes(searchQuery.toLowerCase())
-    );
-  };
-
   return (
-    <>
-      <div style={{ background: "var(--card-background)", color: "var(--text-primary)" }}>
-        <div className="container p-5">
-          <h2 className="font-weight-bold mb-4">Explorer Page</h2>
+    <div
+      style={{
+        background: "var(--card-background)",
+        color: "var(--text-primary)",
+      }}
+    >
+      <div className="container p-5">
+        <h2 className="font-weight-bold mb-4">Explorer Page</h2>
 
-          {/* Search Bar */}
-          <Form.Control
-            type="text"
-            placeholder="Search..."
-            value={searchQuery}
-            onChange={handleSearch}
-            className="mb-4"
-            style={{ width: '', margin: '' }}
-          />
+        {/* Search Bar */}
+        <Form.Control
+          type="text"
+          placeholder="Search user by username..."
+          value={searchQuery}
+          onChange={handleSearch}
+          className="mb-4"
+        />
 
-         
-        </div>
+        {/* Loading State */}
+        {isLoading && <Spinner animation="border" />}
+
+        {/* Error State */}
+        {error && <p className="text-danger">User not found</p>}
+
+        {/* Display User Profile if Found */}
+        {user && (
+          <Card
+            className="p-3 mb-3 d-flex align-items-center"
+            style={{
+              cursor: "pointer",
+              background: "var(--card-background)",
+              display: "flex",
+              flexDirection: "row",
+              gap: "0px",
+            }}
+            onClick={() => navigate(`/profile/${user.username}`)} // ✅ Navigate to searched user's profile
+          >
+            <Card.Img
+              variant="top"
+              src={user.profilePicture || "https://via.placeholder.com/150"}
+              alt={user.username}
+              style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+            />
+            <Card.Body className="d-flex align-items-center">
+              <Card.Title
+                style={{
+                  cursor: "pointer",
+                  color: "var(--primary-color)",
+                  fontSize: "1.2rem",
+                  margin: 0,
+                }}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevents card click event from triggering
+                  navigate(`/profile/user/${user.username}`); 
+                }}
+              >
+                {user.username}
+              </Card.Title>
+            </Card.Body>
+          </Card>
+        )}
       </div>
-    </>
+    </div>
   );
 };
 
