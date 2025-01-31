@@ -4,24 +4,24 @@ const followApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     // Endpoint: Send Follow Request
     sendFollowRequest: builder.mutation({
-      query: (userId) => ({
-        url: `follow/send/${userId}`,
+      query: (username) => ({
+        url: `follow/send/${username}`,
         method: "POST",
       }),
     }),
 
     // Endpoint: Accept Follow Request
     acceptFollowRequest: builder.mutation({
-      query: (requestId) => ({
-        url: `follow/accept/${requestId}`,
+      query: (username) => ({
+        url: `follow/accept/${username}`,
         method: "POST",
       }),
     }),
 
     // Endpoint: Reject Follow Request
     rejectFollowRequest: builder.mutation({
-      query: (requestId) => ({
-        url: `follow/reject/${requestId}`,
+      query: (username) => ({
+        url: `follow/reject/${username}`,
         method: "POST",
       }),
     }),

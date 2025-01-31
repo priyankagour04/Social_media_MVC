@@ -55,7 +55,7 @@ const Signup = () => {
         <p className="text-muted mb-4">
           Already have an account?{" "}
           <button
-            onClick={() => navigate("/login")}
+            onClick={() => navigate("/")}
             className="text-success fw-medium text-decoration-none border-0 bg-transparent"
           >
             Login

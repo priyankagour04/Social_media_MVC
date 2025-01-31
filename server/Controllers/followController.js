@@ -3,7 +3,7 @@ import userModel from "../Models/userModel.js";
 // Send a follow request to another user
 export const sendFollowRequest = async (req, res) => {
   const { username } = req.params; // Username of the user to whom the request is being sent
-  const senderId = req.user.id; // ID of the sender (assume it's from authentication middleware)
+  const senderId = req.user.id; 
 
   try {
     const user = await userModel.findOne({ username });

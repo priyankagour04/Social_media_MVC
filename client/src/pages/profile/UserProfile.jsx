@@ -1,13 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 import PostCard from "../../components/post/PostCard";
 import { useGetUserProfileQuery } from "../../services/api/profileApi";
-import { useSelector } from "react-redux";
 import { useGetUserPostsByUsernameQuery } from "../../services/api/postApi";
+import FollowBtn from "../../components/Commanbtn/followBtn";
 
 const UserProfile = () => {
-  const { username } = useParams(); // Get the username from the URL
+  const { username } = useParams(); 
   const navigate = useNavigate();
+  const [followStatus, setFollowStatus] = useState("Follow");
 
   // Get the logged-in user data from Redux
   const loggedInUser = useSelector((state) => state.auth.user);
@@ -19,12 +21,12 @@ const UserProfile = () => {
     isLoading: isLoadingProfile,
   } = useGetUserProfileQuery({ username });
 
-  // Fetch user posts data using RTK Query based on username
+  // Fetch user posts data using RTK Query
   const {
     data: postsData,
     error: postsError,
     isLoading: isLoadingPosts,
-  } = useGetUserPostsByUsernameQuery(username); // Pass username directly here
+  } = useGetUserPostsByUsernameQuery(username);
 
   useEffect(() => {
     if (!localStorage.getItem("jwtToken")) {
@@ -32,14 +34,21 @@ const UserProfile = () => {
     }
   }, [navigate]);
 
+  useEffect(() => {
+    if (profileData && profileData.receivedRequests?.includes(loggedInUser?.id)) {
+      setFollowStatus("Requested");
+    } else if (profileData?.followers?.includes(loggedInUser?.id)) {
+      setFollowStatus("Following");
+    } else {
+      setFollowStatus("Follow");
+    }
+  }, [profileData, loggedInUser]);
+
   if (isLoadingProfile || isLoadingPosts) return <p>Loading...</p>;
   if (profileError) return <p className="text-danger">Error: {profileError.message}</p>;
   if (postsError) return <p className="text-danger">Error: {postsError.message}</p>;
 
-  // If no user is found
-  if (!profileData) {
-    return <p className="text-warning">No user found</p>;
-  }
+  if (!profileData) return <p className="text-warning">No user found</p>;
 
   return (
     <div className="min-vh-100 container my-5 rounded-lg">
@@ -75,16 +84,20 @@ const UserProfile = () => {
               <p className="text-muted">Following</p>
             </div>
           </div>
+          {/* Follow Button Component */}
+          {loggedInUser?.id !== profileData.id && (
+            <FollowBtn username={profileData.username} initialFollowStatus={followStatus} />
+          )}
         </div>
       </div>
       <hr />
 
       <div className="my-5">
         <div className="row g-3">
-          {postsData && postsData.length > 0 ? (
+          {postsData?.length > 0 ? (
             postsData.map((post) => (
               <div className="col-lg-6" key={post._id}>
-                <PostCard key={post._id} posts={[post]} />
+                <PostCard posts={[post]} />
               </div>
             ))
           ) : (
