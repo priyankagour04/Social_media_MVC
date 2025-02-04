@@ -45,6 +45,19 @@ const followApi = apiSlice.injectEndpoints({
         method: "GET",
       }),
     }),
+
+getFollowStatus: builder.query({
+  query: (username) => ({
+    url: `follow/status/${username}`,
+    method: "GET",
+    headers: {
+      Authorization: `Bearer ${getAccessToken()}`,
+    },
+  }),
+}),
+
+
+
   }),
 });
 
@@ -53,6 +66,7 @@ export const {
   useAcceptFollowRequestMutation,
   useRejectFollowRequestMutation,
   useGetFollowRequestQuery,
+  useGetFollowStatusQuery,
 } = followApi;
 
 export { followApi };

@@ -184,27 +184,40 @@ export const getFollowRequest = async (req, res) => {
 };
 
 export const getFollowStatus = async (req, res) => {
-  const { username } = req.params;
-  const currentUserId = req.user.id;
-
   try {
+    const { username } = req.params;
+    const currentUserId = req.user?.id;
+
+    // Check if currentUserId exists
+    if (!currentUserId) {
+      return res.status(401).json({ error: "Unauthorized: No user ID found" });
+    }
+
+    // Fetch current user & target user
     const user = await userModel.findById(currentUserId);
     const targetUser = await userModel.findOne({ username });
 
     if (!user || !targetUser) {
-      return res.status(404).json({ status: "Follow" });
+      return res.status(404).json({ status: "Follow", error: "User not found" });
     }
 
-    if (user.following.includes(targetUser._id)) {
+    // Convert ObjectIds to strings
+    const targetUserId = targetUser._id.toString();
+
+    // Check if already following
+    if (user.following.includes(targetUserId)) {
       return res.json({ status: "Following" });
     }
-    if (user.sentRequests.includes(targetUser._id)) {
+
+    // Check if request is sent
+    if (user.pendingRequests.includes(targetUserId)) {
       return res.json({ status: "Requested" });
     }
 
+    // Default to "Follow" if no other status applies
     return res.json({ status: "Follow" });
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ status: "Follow" });
+    console.error("Error in getFollowStatus:", error);
+    return res.status(500).json({ status: "Follow", error: "Server error" });
   }
 };
