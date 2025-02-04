@@ -4,7 +4,9 @@ import { useSelector } from "react-redux";
 import PostCard from "../../components/post/PostCard";
 import { useGetUserProfileQuery } from "../../services/api/profileApi";
 import { useGetUserPostsByUsernameQuery } from "../../services/api/postApi";
+
 import FollowBtn from "../../components/Commanbtn/followBtn";
+import { useGetFollowStatusQuery } from "../../services/api/followRequestApi";
 
 const UserProfile = () => {
   const { username } = useParams(); 
@@ -28,6 +30,9 @@ const UserProfile = () => {
     isLoading: isLoadingPosts,
   } = useGetUserPostsByUsernameQuery(username);
 
+  // Fetch the follow status using RTK Query
+  const { data: followData, error: followError, isLoading: isLoadingFollow } = useGetFollowStatusQuery(username);
+
   useEffect(() => {
     if (!localStorage.getItem("jwtToken")) {
       navigate("/"); // Redirect to login if not authenticated
@@ -35,18 +40,15 @@ const UserProfile = () => {
   }, [navigate]);
 
   useEffect(() => {
-    if (profileData && profileData.receivedRequests?.includes(loggedInUser?.id)) {
-      setFollowStatus("Requested");
-    } else if (profileData?.followers?.includes(loggedInUser?.id)) {
-      setFollowStatus("Following");
-    } else {
-      setFollowStatus("Follow");
+    if (followData) {
+      setFollowStatus(followData.status); // Set the follow status from the API response
     }
-  }, [profileData, loggedInUser]);
+  }, [followData]);
 
-  if (isLoadingProfile || isLoadingPosts) return <p>Loading...</p>;
+  if (isLoadingProfile || isLoadingPosts || isLoadingFollow) return <p>Loading...</p>;
   if (profileError) return <p className="text-danger">Error: {profileError.message}</p>;
   if (postsError) return <p className="text-danger">Error: {postsError.message}</p>;
+  if (followError) return <p className="text-danger">Error: {followError.message}</p>;
 
   if (!profileData) return <p className="text-warning">No user found</p>;
 
@@ -92,19 +94,26 @@ const UserProfile = () => {
       </div>
       <hr />
 
-      <div className="my-5">
-        <div className="row g-3">
-          {postsData?.length > 0 ? (
-            postsData.map((post) => (
-              <div className="col-lg-6" key={post._id}>
-                <PostCard posts={[post]} />
-              </div>
-            ))
-          ) : (
-            <p className="text-muted text-center">No posts available</p>
-          )}
+      {/* Only show posts if the user is following */}
+      {followStatus === "Following" && (
+        <div className="my-5">
+          <div className="row g-3">
+            {postsData?.length > 0 ? (
+              postsData.map((post) => (
+                <div className="col-lg-6" key={post._id}>
+                  <PostCard posts={[post]} />
+                </div>
+              ))
+            ) : (
+              <p className="text-muted text-center">No posts available</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+      {/* Show a message when user is not following */}
+      {followStatus !== "Following" && (
+        <p className="text-muted text-center">Follow this user to view their posts</p>
+      )}
     </div>
   );
 };
