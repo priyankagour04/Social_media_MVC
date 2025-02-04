@@ -19,9 +19,12 @@ const followApi = apiSlice.injectEndpoints({
     // Accept Follow Request
     acceptFollowRequest: builder.mutation({
       query: ({ username }) => ({
-        url: "follow/accept",
+        url: `follow/accept/${username}`,
         method: "POST",
-        body: { username },
+        body: {}, // No additional body needed, just the URL
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`, 
+        },
       }),
     }),
 
