@@ -161,25 +161,50 @@ export const getFollowers = async (req, res) => {
   }
 };
 
-
 export const getFollowRequest = async (req, res) => {
   try {
-    const userId = req.user.id;  // The _id is stored as id in the token payload
-    console.log("Authenticated userID:", userId);  // Log to verify the userId
+    const userId = req.user.id; // The _id is stored as id in the token payload
+    console.log("Authenticated userID:", userId); // Log to verify the userId
 
     // Find the user in the database using _id (MongoDB's default field)
     const user = await userModel
-      .findOne({ _id: userId })  // Corrected query to match the _id field
+      .findOne({ _id: userId }) // Corrected query to match the _id field
       .populate("receivedRequests");
 
     if (!user) {
-      console.log("User not found with userid:", userId);  // Log if no user is found
+      console.log("User not found with userid:", userId); // Log if no user is found
       return res.status(404).json({ message: "User not found" });
     }
 
-    res.status(200).json(user.receivedRequests);  // Return the list of received requests
+    res.status(200).json(user.receivedRequests); // Return the list of received requests
   } catch (error) {
-    console.error("Error in getting follow requests:", error);  // Log any errors
+    console.error("Error in getting follow requests:", error); // Log any errors
     res.status(500).json({ message: "Internal server error" });
+  }
+};
+
+export const getFollowStatus = async (req, res) => {
+  const { username } = req.params;
+  const currentUserId = req.user.id;
+
+  try {
+    const user = await userModel.findById(currentUserId);
+    const targetUser = await userModel.findOne({ username });
+
+    if (!user || !targetUser) {
+      return res.status(404).json({ status: "Follow" });
+    }
+
+    if (user.following.includes(targetUser._id)) {
+      return res.json({ status: "Following" });
+    }
+    if (user.sentRequests.includes(targetUser._id)) {
+      return res.json({ status: "Requested" });
+    }
+
+    return res.json({ status: "Follow" });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ status: "Follow" });
   }
 };
