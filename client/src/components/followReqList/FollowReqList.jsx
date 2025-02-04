@@ -1,37 +1,46 @@
-import React, { useState } from "react";
-import { useGetFollowRequestQuery, useAcceptFollowRequestMutation } from "../../services/api/followRequestApi";
+import React, { useEffect, useState } from "react";
+import { useGetFollowRequestQuery, useAcceptFollowRequestMutation, useRejectFollowRequestMutation } from "../../services/api/followRequestApi";
 import { handleSuccess, handleError } from "../../utility/toster/Tostify"; 
+import { FaTimes } from "react-icons/fa";
+
 const FollowReqList = () => {
-  const { data, error, isLoading } = useGetFollowRequestQuery();
-  const [acceptFollowRequest, { isLoading: isAccepting, error: acceptError }] = useAcceptFollowRequestMutation();
-  const [requests, setRequests] = useState(data || []); // State to manage the list of requests locally
+  const { data, error, isLoading, refetch } = useGetFollowRequestQuery(); // Fetching follow requests
+  const [acceptFollowRequest, { isLoading: isAccepting }] = useAcceptFollowRequestMutation();
+  const [rejectFollowRequest, { isLoading: isRejecting }] = useRejectFollowRequestMutation();
+  
+  const [requests, setRequests] = useState([]);
 
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
+  // Update local state whenever new data is fetched
+  useEffect(() => {
+    if (data) {
+      setRequests(data);
+    }
+  }, [data]);
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
 
-  if (!requests || requests.length === 0) {
-    return <div>No follow requests found</div>;
-  }
+  if (!requests || requests.length === 0) return <div>No follow requests found</div>;
 
   const handleAccept = async (username) => {
     try {
-      // Call the accept API
       await acceptFollowRequest({ username }).unwrap();
-
-      // Show success toast notification
       handleSuccess(`Follow request from ${username} accepted!`);
-
-      // Remove the accepted request from the list
-      setRequests((prevRequests) => prevRequests.filter((request) => request.username !== username));
+      refetch(); // Fetch the updated requests
     } catch (err) {
-      // Show error toast notification
       handleError(`Error accepting request from ${username}`);
       console.error("Error accepting follow request:", err);
+    }
+  };
+
+  const handleReject = async (username) => {
+    try {
+      await rejectFollowRequest({ username }).unwrap();
+      handleSuccess(`Follow request from ${username} rejected!`);
+      refetch(); // Fetch the updated requests
+    } catch (err) {
+      handleError(`Error rejecting request from ${username}`);
+      console.error("Error rejecting follow request:", err);
     }
   };
 
@@ -47,7 +56,7 @@ const FollowReqList = () => {
           >
             <div className="d-flex align-items-center">
               <img
-                src={request.profilePicture || "default-avatar.jpg"} // Fallback if no profile picture
+                src={request.profilePicture || "default-avatar.jpg"}
                 alt={`${request.username}'s profile`}
                 className="rounded-circle me-3"
                 style={{ width: "40px", height: "40px" }}
@@ -55,16 +64,22 @@ const FollowReqList = () => {
               <span>{request.username}</span>
             </div>
             <button
-              onClick={() => handleAccept(request.username)} // Pass the username to the handler
+              onClick={() => handleAccept(request.username)}
               className="btn btn-primary btn-sm"
-              disabled={isAccepting} // Disable button when accepting
+              disabled={isAccepting}
             >
               {isAccepting ? "Accepting..." : "Accept"}
+            </button>
+            <button
+              onClick={() => handleReject(request.username)}
+              className="btn btn-danger btn-sm ms-2"
+              disabled={isRejecting}
+            >
+              <FaTimes />
             </button>
           </div>
         ))}
       </div>
-      {acceptError && <div className="alert alert-danger mt-3">{acceptError.message}</div>}
     </div>
   );
 };
