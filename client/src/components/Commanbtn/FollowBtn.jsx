@@ -1,44 +1,36 @@
-import React, { useState, useEffect } from "react";
-import { useSendFollowRequestMutation } from "../../services/api/followRequestApi";
+import React, { useState } from 'react';
+import {useSendFollowRequestMutation} from '../../services/api/followRequestApi'
 
 const FollowBtn = ({ username, initialFollowStatus }) => {
+  const [followStatus, setFollowStatus] = useState(initialFollowStatus);
   const [sendFollowRequest, { isLoading }] = useSendFollowRequestMutation();
-  const [buttonText, setButtonText] = useState(initialFollowStatus);
-
-  useEffect(() => {
-    setButtonText(initialFollowStatus);
-  }, [initialFollowStatus]);
-
-  const handleFollowRequest = async () => {
-    if (!username) {
-      console.error("Error: Username is missing.");
-      alert("Invalid user. Please try again.");
-      return;
-    }
-
+  const handleFollowClick = async () => {
     try {
-      const response = await sendFollowRequest(username).unwrap();
-      console.log("Follow Request Response:", response);
+      // Only allow if the status is not already 'Following' or 'Requested'
+      if (followStatus === 'Follow') {
+        const response = await sendFollowRequest({ username }).unwrap(); // Send the follow request
 
-      if (response.message === "User not found.") {
-        alert("User not found. Please check the username.");
-        return;
+        // Check if the follow request was sent successfully
+        if (response?.message === 'Follow request sent successfully') {
+          setFollowStatus('Requested'); // Update the status to 'Requested'
+        }
+      } else if (followStatus === 'Requested') {
+        // Handle un-follow or cancel request logic (optional)
+      } else if (followStatus === 'Following') {
+        // Handle unfollow logic here if required
       }
-
-      setButtonText("Requested");
     } catch (error) {
-      console.error("Error sending follow request:", error);
-      alert(error?.data?.message || "Failed to send follow request.");
+      console.error('Error sending follow request:', error);
     }
   };
 
   return (
-    <button
-      onClick={handleFollowRequest}
-      disabled={isLoading || buttonText === "Requested"}
-      className="btn bg-primary text-white px-4 mt-5 w-100 py-2"
+    <button 
+      className="btn btn-primary" 
+      onClick={handleFollowClick} 
+      disabled={isLoading}
     >
-      {isLoading ? "Sending..." : buttonText}
+      {followStatus === 'Follow' ? 'Follow' : followStatus}
     </button>
   );
 };

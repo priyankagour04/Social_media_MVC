@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { Row, Col } from 'react-bootstrap';
 import { useNavigate, useParams } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
 import PostCard from "../../components/post/PostCard";
 import { useGetProfileQuery } from "../../services/api/profileApi";
 import { useGetUserPostsQuery } from "../../services/api/postApi";
 import CreatePost from "../../components/post/CreatePost";
+import FollowReqList from "../../components/followReqList/FollowReqList";
 
 const ViewProfile = () => {
   const [showModal, setShowModal] = useState(false); // Manage modal visibility here
@@ -13,8 +15,16 @@ const ViewProfile = () => {
   const navigate = useNavigate();
   const token = localStorage.getItem("jwtToken");
 
-  const { data: profileData, error: profileError, isLoading: isLoadingProfile } = useGetProfileQuery(username);
-  const { data: postsData, error: postsError, isLoading: isLoadingPosts } = useGetUserPostsQuery();
+  const {
+    data: profileData,
+    error: profileError,
+    isLoading: isLoadingProfile,
+  } = useGetProfileQuery(username);
+  const {
+    data: postsData,
+    error: postsError,
+    isLoading: isLoadingPosts,
+  } = useGetUserPostsQuery();
 
   useEffect(() => {
     if (!token) {
@@ -52,7 +62,9 @@ const ViewProfile = () => {
           <h2 className="fw-bold mt-4" style={{ fontSize: "20px" }}>
             {user.username}
           </h2>
-          <p className="text-muted mt-2 fw-semibold">{user.bio || "No bio available"}</p>
+          <p className="text-muted mt-2 fw-semibold">
+            {user.bio || "No bio available"}
+          </p>
         </div>
 
         <div className="ml-4">
@@ -62,11 +74,15 @@ const ViewProfile = () => {
               <p className="text-muted">Posts</p>
             </div>
             <div className="text-center">
-              <h4 className="font-weight-bold">{user.followers?.length || 0}</h4>
+              <h4 className="font-weight-bold">
+                {user.followers?.length || 0}
+              </h4>
               <p className="text-muted">Followers</p>
             </div>
             <div className="text-center">
-              <h4 className="font-weight-bold">{user.following?.length || 0}</h4>
+              <h4 className="font-weight-bold">
+                {user.following?.length || 0}
+              </h4>
               <p className="text-muted">Following</p>
             </div>
           </div>
@@ -81,10 +97,15 @@ const ViewProfile = () => {
       <hr />
 
       {/* Recent Posts Section */}
-      <div className="my-5">
+      <Row>
+      <Col lg={7} md={12} className="mb-3">
         <CreatePost showModal={showModal} setShowModal={setShowModal} />
         <PostCard posts={postsData || []} />
-      </div>
+      </Col>
+      <Col lg={5} md={12} className="d-none d-lg-block px-5">
+        <FollowReqList />
+      </Col>
+    </Row>
     </div>
   );
 };
