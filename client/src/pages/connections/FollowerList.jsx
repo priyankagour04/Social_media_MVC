@@ -41,7 +41,7 @@ const FollowerList = () => {
                   key={follower._id}
                   className="d-flex align-items-center gap-3 py-2 border-bottom"
                 >
-                  {/* Profile Image Wrapper (Bootstrap Optimized) */}
+              
                   <div
                     className="rounded-circle border overflow-hidden d-flex justify-content-center align-items-center"
                     style={{ width: "70px", height: "70px" }}

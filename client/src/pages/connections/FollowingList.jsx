@@ -1,45 +1,55 @@
 import React from "react";
 import { useGetFollowingQuery } from "../../services/api/followRequestApi";
-import "bootstrap/dist/css/bootstrap.min.css";
+import {
+  Container,
+  ListGroup,
+  Image,
+  Spinner,
+  Alert,
+  Card,
+} from "react-bootstrap";
 
 const FollowingList = () => {
   const { data, error, isLoading } = useGetFollowingQuery();
 
-  console.log("API Response:", data); // Debugging API Response
+  if (isLoading)
+    return (
+      <div className="d-flex justify-content-center my-4">
+        <Spinner animation="border" variant="primary" />
+      </div>
+    );
 
-  if (isLoading) {
-    return <div className="text-center fw-bold mt-4">Loading...</div>;
-  }
+  if (error) return <Alert variant="danger">Error loading following list</Alert>;
 
-  if (error) {
-    return <div className="text-center text-danger fw-bold mt-4">Error: {error.message || "Something went wrong"}</div>;
-  }
-
-  // Handle API response
-  const followingUsers = Array.isArray(data) ? data : data?.following || [];
+  // Ensure the response is an array before mapping
+  const followingUsers = Array.isArray(data?.following) ? data.following : [];
 
   return (
-    <div className="container mt-5">
-      <div className="card shadow-lg">
-        <div className="text-center">
-          <h2 className="p-3 mb-0"
-           style={{
+    <Container className="mt-4">
+      <Card className="shadow-lg p-3">
+        <Card.Header
+          className="text-center fw-bold"
+          style={{
             backgroundColor: "var(--primary-color)",
             color: "var(--white)",
           }}
-          >Following List</h2>
-        </div>
-        <div className="card-body">
+        >
+          Following List
+        </Card.Header>
+        <Card.Body>
           {followingUsers.length > 0 ? (
-            <ul className="list-group">
+            <ListGroup variant="flush">
               {followingUsers.map((user) => (
-                <li key={user.id || user._id} className="list-group-item d-flex align-items-center">
-                  {/* Profile Image Container */}
+                <ListGroup.Item
+                  key={user._id}
+                  className="d-flex align-items-center gap-3 py-2 border-bottom"
+                >
+                  {/* Profile Image Wrapper */}
                   <div
-                    className="rounded-circle border overflow-hidden d-flex justify-content-center align-items-center me-3"
+                    className="rounded-circle border overflow-hidden d-flex justify-content-center align-items-center"
                     style={{ width: "70px", height: "70px" }}
                   >
-                    <img
+                    <Image
                       src={user.profilePicture || "/default-avatar.png"}
                       alt={user.username || "User"}
                       className="rounded-circle"
@@ -51,20 +61,22 @@ const FollowingList = () => {
                     />
                   </div>
 
-                  {/* User Details */}
+                  {/* User Info */}
                   <div>
-                    <h5 className="mb-0">{user.name || user.username}</h5>
-                    <small className="text-muted">@{user.username || "username"}</small>
+                    <h6 className="mb-1 fw-bold">{user.name || user.username}</h6>
+
                   </div>
-                </li>
+                </ListGroup.Item>
               ))}
-            </ul>
+            </ListGroup>
           ) : (
-            <p className="text-center text-muted">No following users found.</p>
+            <Alert variant="info" className="text-center">
+              You are not following anyone.
+            </Alert>
           )}
-        </div>
-      </div>
-    </div>
+        </Card.Body>
+      </Card>
+    </Container>
   );
 };
 

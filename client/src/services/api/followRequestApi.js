@@ -10,7 +10,7 @@ const followApi = apiSlice.injectEndpoints({
         method: "POST",
         body: {},
         headers: {
-          Authorization: `Bearer ${getAccessToken()}`, 
+          Authorization: `Bearer ${getAccessToken()}`,
         },
       }),
     }),
@@ -29,7 +29,7 @@ const followApi = apiSlice.injectEndpoints({
 
     rejectFollowRequest: builder.mutation({
       query: ({ username }) => ({
-        url: `follow/reject/${username}`, 
+        url: `follow/reject/${username}`,
         method: "POST",
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,

@@ -8,9 +8,11 @@ import { useGetUserPostsQuery } from "../../services/api/postApi";
 import CreatePost from "../../components/post/CreatePost";
 import FollowReqList from "../../components/followReqList/FollowReqList";
 import FollowerList from "../connections/FollowerList";
+import FollowingList from "../connections/FollowingList"; 
 
 const ViewProfile = () => {
-  const [showModal, setShowModal] = useState(false); // Manage modal visibility here
+  const [showModal, setShowModal] = useState(false);
+  const [activeTab, setActiveTab] = useState("requests"); 
   const { username } = useParams();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -29,11 +31,11 @@ const ViewProfile = () => {
 
   useEffect(() => {
     if (!token) {
-      navigate("/"); // Redirect to login if no token
+      navigate("/");
     }
 
     if (profileData) {
-      setUser(profileData); // Set user data retrieved from API
+      setUser(profileData);
     }
   }, [profileData, token, navigate]);
 
@@ -49,17 +51,8 @@ const ViewProfile = () => {
     navigate(`/edit-profile/${username}`);
   };
 
-  const handleFollowersList = () => {
-    navigate(`/followers`);
-  };
-
-  const handleFollowingList = () => {
-    navigate(`/following`);
-  };
-
   return (
     <div className="min-vh-100 container my-5 rounded-lg">
-      {/* Profile Section */}
       <div className="d-flex justify-content-around">
         <div className="position-relative text-center">
           <img
@@ -80,28 +73,37 @@ const ViewProfile = () => {
           <div className="d-flex justify-content-between mt-4 gap-5">
             <div className="text-center">
               <h4 className="font-weight-bold">{user.posts?.length || 0}</h4>
-              <h6 className="text-muted">Posts</h6>
+              <p className="text-muted">Posts</p>
             </div>
             <div className="text-center">
-              <h4 className="font-weight-bold">
-                {user.followers?.length || 0}
-              </h4>
-              <h6
-                className="text-muted "
+              <h4 className="font-weight-bold">{user.followers?.length || 0}</h4>
+              <p
+                className={`text-muted cursor-pointer ${activeTab === "followers" ? "fw-bold" : ""}`}
+                onClick={() => setActiveTab("followers")}
                 style={{ cursor: "pointer" }}
-                onClick={handleFollowersList}
               >
                 Followers
-              </h6>
+              </p>
             </div>
             <div className="text-center">
-              <h4 className="font-weight-bold">
-                {user.following?.length || 0}
-              </h4>
-              <h6 className="text-muted"
-              onClick={handleFollowingList}
-              style={{cursor: "pointer"}}
-              >Following</h6>
+              <h4 className="font-weight-bold">{user.following?.length || 0}</h4>
+              <p
+                className={`text-muted cursor-pointer ${activeTab === "following" ? "fw-bold" : ""}`}
+                onClick={() => setActiveTab("following")}
+                style={{ cursor: "pointer" }}
+              >
+                Following
+              </p>
+            </div>
+            <div className="text-center">
+            <h4 className="font-weight-bold">{user.receivedRequests?.length || 0}</h4>
+              <p
+                className={`text-muted cursor-pointer ${activeTab === "requests" ? "fw-bold" : ""}`}
+                onClick={() => setActiveTab("requests")}
+                style={{ cursor: "pointer" }}
+              >
+                Requests
+              </p>
             </div>
           </div>
           <button
@@ -114,17 +116,22 @@ const ViewProfile = () => {
       </div>
       <hr />
 
-      <div className="d-flex justify-content-end">
+      <div>
         <CreatePost showModal={showModal} setShowModal={setShowModal} />
       </div>
 
-      {/* Recent Posts Section */}
       <Row className="mt-3">
-        <Col lg={7} md={12} className="">
+        <Col lg={7} md={12}>
           <PostCard posts={postsData || []} />
         </Col>
         <Col lg={5} md={12} className="d-none d-lg-block px-5">
-          <FollowReqList />
+          {activeTab === "followers" ? (
+            <FollowerList />
+          ) : activeTab === "following" ? (
+            <FollowingList />
+          ) : (
+            <FollowReqList />
+          )}
         </Col>
       </Row>
     </div>
