@@ -7,7 +7,7 @@ const users = {}; // Store user connections
 export const initializeSocket = (server) => {
   io = new Server(server, {
     cors: {
-      origin: "http://localhost:5055", // Update with your frontend URL
+      origin: "http://localhost:5173", // Your frontend URL (React/Vite)
       methods: ["GET", "POST"],
     },
   });
@@ -15,7 +15,7 @@ export const initializeSocket = (server) => {
   io.on('connection', (socket) => {
     console.log(`User connected: ${socket.id}`);
 
-    // Register the user
+    // Register the user (map userId to socketId)
     socket.on('register', (userId) => {
       users[userId] = socket.id;
       console.log(`User registered: ${userId}`);
@@ -42,6 +42,8 @@ export const initializeSocket = (server) => {
       }
     });
   });
+
+  return io; // Return the io instance
 };
 
 // Emit notification to a specific user (helper function)

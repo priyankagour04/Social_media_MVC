@@ -1,60 +1,61 @@
 import userModel from "../Models/userModel.js";
+import { sendNotification } from "../Utils/soket.js";
+import Notification from "../Models/notificationModel.js"; // Import Notification model
 
-// Send a follow request to another user
-
+// Send follow request and create a notification
 export const sendFollowRequest = async (req, res) => {
   try {
-    if (!req.body) {
-      return res.status(400).json({ message: "Request body is required" });
-    }
-
-    const { username } = req.params; // Recipient username (sent as part of URL)
-    const senderId = req.user?.id; // Logged-in user's ID
+    const { username } = req.params;
+    const senderId = req.user?.id; // Assuming authentication middleware sets req.user
 
     if (!senderId) {
       return res.status(401).json({ message: "Unauthorized. Please log in." });
     }
 
-    console.log("Follow request received for:", username);
-
     const recipient = await userModel.findOne({ username });
     const sender = await userModel.findById(senderId);
 
-    if (!recipient)
-      return res.status(404).json({ message: "Recipient not found" });
-    if (!sender) return res.status(404).json({ message: "Sender not found" });
-
-    if (recipient._id.toString() === senderId) {
-      return res.status(400).json({ message: "You cannot follow yourself" });
-    }
+    if (!recipient) return res.status(404).json({ message: "Recipient not found" });
 
     if (recipient.receivedRequests.includes(senderId)) {
       return res.status(400).json({ message: "Follow request already sent" });
     }
 
-    if (recipient.followers.includes(senderId)) {
-      return res
-        .status(400)
-        .json({ message: "You are already following this user" });
-    }
-
-    // Add follow request
+    // Add sender to recipient's received requests
     recipient.receivedRequests.push(senderId);
     sender.pendingRequests.push(recipient._id);
+    await Promise.all([recipient.save(), sender.save()]); // Save both in parallel
 
-    await recipient.save();
-    await sender.save();
+    // Check if a similar notification already exists
+    const existingNotification = await Notification.findOne({
+      userId: recipient._id,
+      referenceId: sender._id,
+      type: "follow",
+    });
+
+    if (!existingNotification) {
+      // Create a new follow request notification
+      const notification = new Notification({
+        userId: recipient._id,  
+        type: "follow",          
+        referenceId: sender._id, 
+        message: `${sender.username} sent you a follow request.`,
+      });
+      await notification.save();
+
+      // Emit real-time notification
+      sendNotification(recipient._id.toString(), notification);
+    }
 
     res.status(200).json({
       message: `Follow request sent successfully from ${sender.username} to ${recipient.username}.`,
-      senderUsername: sender.username,
-      recipientUsername: recipient.username,
     });
   } catch (error) {
     console.error("Error sending follow request:", error);
     res.status(500).json({ message: "Internal server error" });
   }
 };
+
 
 // Accept a follow request
 export const acceptFollowRequest = async (req, res) => {
