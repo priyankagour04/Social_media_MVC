@@ -1,4 +1,3 @@
-// services/api/followRequestApi.js
 import { apiSlice } from "../../redux/slices/apiSlice";
 import { getAccessToken } from "../../utility/auth/auth";
 
@@ -11,7 +10,7 @@ const followApi = apiSlice.injectEndpoints({
         method: "POST",
         body: {},
         headers: {
-          Authorization: `Bearer ${getAccessToken()}`, // Include auth token
+          Authorization: `Bearer ${getAccessToken()}`, 
         },
       }),
     }),
@@ -21,7 +20,7 @@ const followApi = apiSlice.injectEndpoints({
       query: ({ username }) => ({
         url: `follow/accept/${username}`,
         method: "POST",
-        body: {}, 
+        body: {},
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,
         },
@@ -30,7 +29,7 @@ const followApi = apiSlice.injectEndpoints({
 
     rejectFollowRequest: builder.mutation({
       query: ({ username }) => ({
-        url: `follow/reject/${username}`, // Send username as a URL parameter
+        url: `follow/reject/${username}`, 
         method: "POST",
         headers: {
           Authorization: `Bearer ${getAccessToken()}`,
@@ -46,18 +45,35 @@ const followApi = apiSlice.injectEndpoints({
       }),
     }),
 
-getFollowStatus: builder.query({
-  query: (username) => ({
-    url: `follow/status/${username}`,
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${getAccessToken()}`,
-    },
-  }),
-}),
+    getFollowStatus: builder.query({
+      query: (username) => ({
+        url: `follow/status/${username}`,
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      }),
+    }),
 
+    getFollowers: builder.query({
+      query: () => ({
+        url: "/follow/followers",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      }),
+    }),
 
-
+    getFollowing: builder.query({
+      query: () => ({
+        url: "/follow/following",
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${getAccessToken()}`,
+        },
+      }),
+    }),
   }),
 });
 
@@ -67,6 +83,8 @@ export const {
   useRejectFollowRequestMutation,
   useGetFollowRequestQuery,
   useGetFollowStatusQuery,
+  useGetFollowersQuery,
+  useGetFollowingQuery,
 } = followApi;
 
 export { followApi };

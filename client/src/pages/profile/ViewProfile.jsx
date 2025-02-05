@@ -7,6 +7,7 @@ import { useGetProfileQuery } from "../../services/api/profileApi";
 import { useGetUserPostsQuery } from "../../services/api/postApi";
 import CreatePost from "../../components/post/CreatePost";
 import FollowReqList from "../../components/followReqList/FollowReqList";
+import FollowerList from "../connections/FollowerList";
 
 const ViewProfile = () => {
   const [showModal, setShowModal] = useState(false); // Manage modal visibility here
@@ -48,6 +49,14 @@ const ViewProfile = () => {
     navigate(`/edit-profile/${username}`);
   };
 
+  const handleFollowersList = () => {
+    navigate(`/followers`);
+  };
+
+  const handleFollowingList = () => {
+    navigate(`/following`);
+  };
+
   return (
     <div className="min-vh-100 container my-5 rounded-lg">
       {/* Profile Section */}
@@ -71,19 +80,28 @@ const ViewProfile = () => {
           <div className="d-flex justify-content-between mt-4 gap-5">
             <div className="text-center">
               <h4 className="font-weight-bold">{user.posts?.length || 0}</h4>
-              <p className="text-muted">Posts</p>
+              <h6 className="text-muted">Posts</h6>
             </div>
             <div className="text-center">
               <h4 className="font-weight-bold">
                 {user.followers?.length || 0}
               </h4>
-              <p className="text-muted">Followers</p>
+              <h6
+                className="text-muted "
+                style={{ cursor: "pointer" }}
+                onClick={handleFollowersList}
+              >
+                Followers
+              </h6>
             </div>
             <div className="text-center">
               <h4 className="font-weight-bold">
                 {user.following?.length || 0}
               </h4>
-              <p className="text-muted">Following</p>
+              <h6 className="text-muted"
+              onClick={handleFollowingList}
+              style={{cursor: "pointer"}}
+              >Following</h6>
             </div>
           </div>
           <button
