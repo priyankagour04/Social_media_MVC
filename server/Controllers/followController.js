@@ -138,29 +138,6 @@ export const rejectFollowRequest = async (req, res) => {
   }
 };
 
-export const getFollowers = async (req, res) => {
-  try {
-    const { userId } = req.params; // Extract userId from request parameters
-
-    // Find the user by ID and populate the followers field with user details
-    const user = await userModel
-      .findById(userId)
-      .populate("followers", "username email profilePicture");
-
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
-
-    res.status(200).json({
-      message: `Here are the followers of ${user.username}`,
-      followers: user.followers,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: "Something went wrong!", error });
-  }
-};
-
 export const getFollowRequest = async (req, res) => {
   try {
     const userId = req.user.id; // The _id is stored as id in the token payload
@@ -198,7 +175,9 @@ export const getFollowStatus = async (req, res) => {
     const targetUser = await userModel.findOne({ username });
 
     if (!user || !targetUser) {
-      return res.status(404).json({ status: "Follow", error: "User not found" });
+      return res
+        .status(404)
+        .json({ status: "Follow", error: "User not found" });
     }
 
     // Convert ObjectIds to strings
@@ -219,5 +198,50 @@ export const getFollowStatus = async (req, res) => {
   } catch (error) {
     console.error("Error in getFollowStatus:", error);
     return res.status(500).json({ status: "Follow", error: "Server error" });
+  }
+};
+
+export const getFollowers = async (req, res) => {
+  try {
+    const userId = req.user.id; // Get logged-in user's ID from authentication middleware
+
+    // Find the user by ID and populate the followers field
+    const user = await userModel
+      .findById(userId)
+      .populate("followers", "username email profilePicture");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: `Here are the followers of ${user.username}`,
+      followers: user.followers,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong!", error });
+  }
+};
+
+export const getFollowing = async (req, res) => {
+  try {
+    const userId = req.user.id; 
+
+    const user = await userModel
+      .findById(userId)
+      .populate("following", "username email profilePicture");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json({
+      message: `Here are the users followed by ${user.username}`,
+      following: user.following,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Something went wrong!", error });
   }
 };

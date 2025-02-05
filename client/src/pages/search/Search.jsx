@@ -65,6 +65,10 @@ const Explorer = () => {
               src={user.profilePicture || "https://via.placeholder.com/150"}
               alt={user.username}
               style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+              onClick={(e) => {
+                  e.stopPropagation(); // Prevents card click event from triggering
+                  navigate(`/profile/user/${user.username}`); 
+                }}
             />
             <Card.Body className="d-flex align-items-center">
               <Card.Title

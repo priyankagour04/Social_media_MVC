@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Row, Col } from 'react-bootstrap';
+import { Row, Col } from "react-bootstrap";
 import { useNavigate, useParams } from "react-router-dom";
 import { FaEdit } from "react-icons/fa";
 import PostCard from "../../components/post/PostCard";
@@ -96,20 +96,19 @@ const ViewProfile = () => {
       </div>
       <hr />
 
-    <div className="d-flex justify-content-end">
-    <CreatePost showModal={showModal} setShowModal={setShowModal} />
-    </div>
+      <div className="d-flex justify-content-end">
+        <CreatePost showModal={showModal} setShowModal={setShowModal} />
+      </div>
 
       {/* Recent Posts Section */}
       <Row className="mt-3">
-      <Col lg={7} md={12} className="">
-      
-        <PostCard posts={postsData || []} />
-      </Col>
-      <Col lg={5} md={12} className="d-none d-lg-block px-5">
-        <FollowReqList />
-      </Col>
-    </Row>
+        <Col lg={7} md={12} className="">
+          <PostCard posts={postsData || []} />
+        </Col>
+        <Col lg={5} md={12} className="d-none d-lg-block px-5">
+          <FollowReqList />
+        </Col>
+      </Row>
     </div>
   );
 };

@@ -6,9 +6,9 @@ import { useLikePostMutation, useUnlikePostMutation, useGetPostsQuery } from "..
 const PostCard = ({ posts }) => {
   const [expandedPostId, setExpandedPostId] = useState(null);
   const [openDropdownId, setOpenDropdownId] = useState(null);
-  const [likedPosts, setLikedPosts] = useState([]); // Track liked posts
-  const [likePost] = useLikePostMutation(); // RTK Query mutation hook for liking
-  const [unlikePost] = useUnlikePostMutation(); // RTK Query mutation hook for unliking
+  const [likedPosts, setLikedPosts] = useState([]); 
+  const [likePost] = useLikePostMutation(); 
+  const [unlikePost] = useUnlikePostMutation(); 
 
   const { data: postsData, refetch } = useGetPostsQuery(); // Fetch posts from server to sync like state
 
